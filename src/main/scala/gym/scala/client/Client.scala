@@ -1,6 +1,5 @@
 package gym.scala.client
 
-
 import spray.json._
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -14,7 +13,6 @@ import scala.util.{Failure, Success}
   * Created by Michael Wang on 04/26/2018.
   */
 object Client extends App {
-
   val source = """{ "env_id": "CartPole-v0" }"""
   val jsonAst = source.parseJson // or JsonParser(source)
   val json = jsonAst.prettyPrint
@@ -32,6 +30,7 @@ object Client extends App {
   responseFuture
     .onComplete {
       case Success(res) => println(res)
+        val e = res.entity
       case Failure(_)   => sys.error("something wrong")
     }
 
