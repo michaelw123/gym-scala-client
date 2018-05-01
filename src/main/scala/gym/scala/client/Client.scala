@@ -6,6 +6,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, _}
 import akka.stream.ActorMaterializer
 
+
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 import scala.util.{Failure, Success}
 
@@ -15,10 +16,22 @@ import scala.util.{Failure, Success}
 class Client(val host:String, val port:Int) {
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
+  implicit val system: ActorSystem = ActorSystem()
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
   def execute(command:GymApi): Unit = {
     command match {
       case createEnv => printf("createEnv")
+        val uri=host+":"+port+envRoot
+        val http = HttpRequest(uri = uri).withMethod(HttpMethods.GET) //.withEntity(HttpEntity(contentType,""))
+        val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
+        responseFuture
+          .onComplete {
+            case Success(res) => println(res)
+              val e = res.entity
+            case Failure(_)   => sys.error("something wrong")
+          }
     }
   }
 
