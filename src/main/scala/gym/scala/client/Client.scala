@@ -22,16 +22,29 @@ class Client(val host:String, val port:Int) {
 
   def execute(command:GymApi): Unit = {
     command match {
-      case createEnv => printf("createEnv")
+      case c: createEnv => println("createEnv")
         val uri=host+":"+port+envRoot
-        val http = HttpRequest(uri = uri).withMethod(HttpMethods.GET) //.withEntity(HttpEntity(contentType,""))
+        val source = """{ "env_id": "CartPole-v0" }"""
+        val http = HttpRequest(uri = uri).withMethod(HttpMethods.POST).withEntity(HttpEntity(contentType,source))
         val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
-        responseFuture
-          .onComplete {
-            case Success(res) => println(res)
-              val e = res.entity
-            case Failure(_)   => sys.error("something wrong")
-          }
+        responseFuture map {
+          case response @ HttpResponse(StatusCodes.OK, _, _, _) =>
+            println(response)
+            response.discardEntityBytes()
+          case response @ HttpResponse(code, _, _, _) => sys.error("something went wrong")
+            response.discardEntityBytes()
+        }
+      case c: listEnvs => println("listEnvs")
+        val uri=host+":"+port+envRoot
+        val http = HttpRequest(uri = uri).withMethod(HttpMethods.GET).withEntity(HttpEntity(contentType,""))
+        val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
+        responseFuture map {
+          case response @ HttpResponse(StatusCodes.OK, _, _, _) =>
+            println(response)
+            response.discardEntityBytes()
+          case response @ HttpResponse(code, _, _, _) => sys.error("something went wrong")
+            response.discardEntityBytes()
+        }
     }
   }
 
