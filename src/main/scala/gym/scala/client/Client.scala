@@ -5,6 +5,9 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, _}
 import akka.stream.ActorMaterializer
+import akka.http.scaladsl.unmarshalling.PredefinedFromStringUnmarshallers._
+
+
 
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
@@ -29,7 +32,10 @@ class Client(val host:String, val port:Int) {
         val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
         responseFuture map {
           case response @ HttpResponse(StatusCodes.OK, _, _, _) =>
-            println(response)
+         //   implicit val longFromStringUnmarshaller: Unmarshaller[String, Long]
+          println(response)
+            val entity = response.entity
+            val l = longFromStringUnmarshaller.unmarshal("aaa:bbb", executionContext, materializer)
             response.discardEntityBytes()
           case response @ HttpResponse(code, _, _, _) => sys.error("something went wrong")
             response.discardEntityBytes()
