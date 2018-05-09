@@ -3,7 +3,7 @@ package gym.scala.client
 /**
   * Created by wangmich on 05/01/2018.
   */
-trait GymApi {
+sealed trait GymApi {
   val instanceId:Option[String]
 }
 case class createEnv(instanceId:Option[String] = None, envId:String) extends GymApi
