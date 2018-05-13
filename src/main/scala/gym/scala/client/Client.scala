@@ -1,5 +1,7 @@
 package gym.scala.client
 
+import spray.json._
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
@@ -10,6 +12,7 @@ import akka.http.scaladsl.unmarshalling._
 import akka.http.scaladsl.unmarshalling.PredefinedFromStringUnmarshallers._
 import akka.util.ByteString
 import scala.util.parsing.json._
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future, Await}
 import scala.util.{Failure, Success}
@@ -19,6 +22,10 @@ import scala.util.{Failure, Success}
   */
 class Client(val host:String, val port:Int) {
   case class GymInstance(instance_id:String)
+  object GymInstance extends DefaultJsonProtocol with SprayJsonSupport
+  {
+    implicit val folderFormat = jsonFormat1(GymInstance.apply)
+  }
 
 
   val contentType = ContentTypes.`application/json`
@@ -39,9 +46,9 @@ class Client(val host:String, val port:Int) {
           case Success(response) => println(response)
             response match {
                case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
-                 val ss = Unmarshal(entity).to[String]
+                 val ss = Unmarshal(entity).to[GymInstance]
                  ss onComplete {
-                   case   Success(json) => println(s"json=$json")
+                   case   Success(json) => println(s"json=${json.instance_id}")
                     case   Failure(t) => println("An error has occurred: " + t.getMessage)
                  }
                 // println(s"ss=${ss.toString}")
