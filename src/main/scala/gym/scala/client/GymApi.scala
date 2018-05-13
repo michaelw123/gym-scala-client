@@ -1,12 +1,19 @@
 package gym.scala.client
 
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, HttpRequest}
+
 /**
   * Created by wangmich on 05/01/2018.
   */
 sealed trait GymApi {
+  val contentType = ContentTypes.`application/json`
+  val envRoot = "/v1/envs/"
+  val method = HttpMethods.POST
   val instanceId:Option[String]
 }
-case class createEnv(instanceId:Option[String] = None, envId:String) extends GymApi
+case class createEnv(instanceId:Option[String] = None, envId:String) extends GymApi {
+  val source = """{ "env_id": "CartPole-v0" }"""
+}
 case class listEnvs(instanceId:Option[String]) extends GymApi
 case class resetEnv(instanceId:Option[String]) extends GymApi
 case class step(instanceId:Option[String]) extends GymApi

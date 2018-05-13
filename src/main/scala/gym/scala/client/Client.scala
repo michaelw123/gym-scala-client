@@ -22,8 +22,7 @@ import scala.util.{Failure, Success}
   */
 class Client(val host:String, val port:Int) {
   case class GymInstance(instance_id:String)
-  object GymInstance extends DefaultJsonProtocol with SprayJsonSupport
-  {
+  object GymInstance extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val folderFormat = jsonFormat1(GymInstance.apply)
   }
 
@@ -38,8 +37,7 @@ class Client(val host:String, val port:Int) {
     command match {
       case c: createEnv => println("createEnv")
         val uri=host+":"+port+envRoot
-        val source = """{ "env_id": "CartPole-v0" }"""
-        val http = HttpRequest(uri = uri).withMethod(HttpMethods.POST).withEntity(HttpEntity(contentType,source))
+        val http = HttpRequest(uri = uri).withMethod(c.method).withEntity(HttpEntity(contentType,c.source))
         val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
 
        responseFuture  onComplete {
