@@ -1,6 +1,5 @@
 package gym.scala.client
 
-import spray.json._
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
@@ -19,7 +18,8 @@ import scala.util.{Failure, Success}
   * Created by Michael Wang on 04/26/2018.
   */
 class Client(val host:String, val port:Int) {
-  case class instanceId(instance_id:String)
+  case class GymInstance(instance_id:String)
+
 
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
