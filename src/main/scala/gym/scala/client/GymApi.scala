@@ -21,7 +21,7 @@ case class listEnvs(instanceId:Option[String]) extends GymApi{
 }
 case class resetEnv(instanceId:Option[String]) extends GymApi{
   override val method = HttpMethods.POST
-  val source = s"""{ "instance_id": "${instanceId.get}" }"""
+  val source = """{ "instance_id": "${instanceId.get}" }"""
 }
 case class step(instanceId:Option[String]) extends GymApi
 case class actionSpace(instanceId:Option[String]) extends GymApi
