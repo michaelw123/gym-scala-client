@@ -67,6 +67,14 @@ class Client(val host:String, val port:Int) {
             }
           case  Failure(t) => println("An error has occurred: " + t.getMessage)
         }
+      case c: resetEnv => println("resetEnv")
+        val uri=host+":"+port+envRoot+c.instanceId.get+"/reset/"
+        val http = HttpRequest(uri = uri).withMethod(HttpMethods.GET).withEntity(HttpEntity(contentType,c.source))
+        val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
+        responseFuture  onComplete {
+          case Success(response) => println(response)
+          case Failure(t) => println("An error has occurred: " + t.getMessage)
+        }
     }
   }
 }

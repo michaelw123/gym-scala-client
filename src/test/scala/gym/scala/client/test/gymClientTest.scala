@@ -9,6 +9,8 @@ object gymClientTest extends App {
    val client = new Client("http://127.0.0.1", 5000)
    //val createEnv = new createEnv(None, "CartPole-v0")
    //val result = client.execute(createEnv)
-   val listEnvs = new listEnvs(Option("07bde0bb"))
-   client.execute(listEnvs)
+  // val listEnvs = new listEnvs(Option("07bde0bb"))
+   //client.execute(listEnvs)
+  val reset = new resetEnv(Option("0b4741c9"))
+  client.execute(reset)
 }
