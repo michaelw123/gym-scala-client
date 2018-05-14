@@ -27,25 +27,26 @@ sealed trait GymApi {
   val envRoot = "/v1/envs/"
   val method = HttpMethods.POST
   val instanceId:Option[String]
+  val source:String
 }
 case class createEnv(instanceId:Option[String] = None, envId:String) extends GymApi {
   override val method = HttpMethods.POST
-  val source = """{ "env_id": "CartPole-v0" }"""
+  override val source = """{ "env_id": "${envId}" }"""
 }
-case class listEnvs(instanceId:Option[String] = null) extends GymApi{
+case class listEnvs(instanceId:Option[String] = None) extends GymApi{
   override val method = HttpMethods.GET
-  val source = """{}"""
+  override val source = """{}"""
 }
 case class resetEnv(instanceId:Option[String]) extends GymApi{
   override val method = HttpMethods.POST
-  val source = """{ "instance_id": "${instanceId.get}" }"""
+  override val source = """{ "instance_id": "${instanceId.get}" }"""
 }
-case class step(instanceId:Option[String]) extends GymApi
-case class actionSpace(instanceId:Option[String]) extends GymApi
-case class obsSpace(instanceId:Option[String]) extends GymApi
-case class monitorStart(instanceId:Option[String]) extends GymApi
-case class monitorFlush(instanceId:Option[String]) extends GymApi
-case class monitorUpload(instanceId:Option[String]) extends GymApi
-case class shutdown(instanceId:Option[String]=None) extends GymApi
+//case class step(instanceId:Option[String]) extends GymApi
+//case class actionSpace(instanceId:Option[String]) extends GymApi
+//case class obsSpace(instanceId:Option[String]) extends GymApi
+//case class monitorStart(instanceId:Option[String]) extends GymApi
+//case class monitorFlush(instanceId:Option[String]) extends GymApi
+//case class monitorUpload(instanceId:Option[String]) extends GymApi
+//case class shutdown(instanceId:Option[String]=None) extends GymApi
 
 

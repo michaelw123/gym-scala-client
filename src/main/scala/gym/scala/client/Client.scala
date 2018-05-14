@@ -21,20 +21,21 @@
 package gym.scala.client
 
 import spray.json._
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.{HttpEntity, _}
+
 import scala.concurrent.duration._
 import akka.stream.ActorMaterializer
 import akka.actor.Actor
 import akka.http.scaladsl.unmarshalling._
 import akka.http.scaladsl.unmarshalling.PredefinedFromStringUnmarshallers._
 import akka.util.ByteString
+
 import scala.util.parsing.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future, Await}
+import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Future}
 import scala.util.{Failure, Success}
 
 /**
@@ -43,18 +44,18 @@ import scala.util.{Failure, Success}
 class Client(val host:String, val port:Int) {
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
+  val uri=host+":"+port+envRoot
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
   def execute(command:GymApi): Unit = {
+    val http = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType,command.source))
+    val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
+
     command match {
       case c: createEnv => println("createEnv")
-        val uri=host+":"+port+envRoot
-        val http = HttpRequest(uri = uri).withMethod(c.method).withEntity(HttpEntity(contentType,c.source))
-        val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
-
-       responseFuture  onComplete {
+        responseFuture  onComplete {
           case Success(response) => println(response)
             response match {
                case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
@@ -70,10 +71,7 @@ class Client(val host:String, val port:Int) {
         }
 
       case c: listEnvs => println("listEnvs")
-        val uri=host+":"+port+envRoot
-        val http = HttpRequest(uri = uri).withMethod(c.method).withEntity(HttpEntity(contentType,c.source))
-        val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
-        responseFuture  onComplete {
+          responseFuture  onComplete {
           case Success(response) => println(response)
             response match {
               case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
@@ -88,9 +86,7 @@ class Client(val host:String, val port:Int) {
           case  Failure(t) => println("An error has occurred: " + t.getMessage)
         }
       case c: resetEnv => println("resetEnv")
-        val uri=host+":"+port+envRoot+c.instanceId.get+"/reset/"
-        val http = HttpRequest(uri = uri).withMethod(c.method).withEntity(HttpEntity(contentType,c.source))
-        val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
+          val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
         responseFuture  onComplete {
           case Success(response) => println(response)
           case Failure(t) => println("An error has occurred: " + t.getMessage)
