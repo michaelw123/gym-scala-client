@@ -32,9 +32,9 @@ case class createEnv(instanceId:Option[String] = None, envId:String) extends Gym
   override val method = HttpMethods.POST
   val source = """{ "env_id": "CartPole-v0" }"""
 }
-case class listEnvs(instanceId:Option[String]) extends GymApi{
+case class listEnvs(instanceId:Option[String] = null) extends GymApi{
   override val method = HttpMethods.GET
-  val source = """{ "env_id": "CartPole-v0" }"""
+  val source = """{}"""
 }
 case class resetEnv(instanceId:Option[String]) extends GymApi{
   override val method = HttpMethods.POST

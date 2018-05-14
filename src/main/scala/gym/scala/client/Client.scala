@@ -71,7 +71,7 @@ class Client(val host:String, val port:Int) {
 
       case c: listEnvs => println("listEnvs")
         val uri=host+":"+port+envRoot
-        val http = HttpRequest(uri = uri).withMethod(c.method).withEntity(HttpEntity(contentType,""))
+        val http = HttpRequest(uri = uri).withMethod(c.method).withEntity(HttpEntity(contentType,c.source))
         val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
         responseFuture  onComplete {
           case Success(response) => println(response)
