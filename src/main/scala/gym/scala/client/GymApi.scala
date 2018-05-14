@@ -12,9 +12,13 @@ sealed trait GymApi {
   val instanceId:Option[String]
 }
 case class createEnv(instanceId:Option[String] = None, envId:String) extends GymApi {
+  override val method = HttpMethods.POST
   val source = """{ "env_id": "CartPole-v0" }"""
 }
-case class listEnvs(instanceId:Option[String]) extends GymApi
+case class listEnvs(instanceId:Option[String]) extends GymApi{
+  override val method = HttpMethods.GET
+  val source = """{ "env_id": "CartPole-v0" }"""
+}
 case class resetEnv(instanceId:Option[String]) extends GymApi
 case class step(instanceId:Option[String]) extends GymApi
 case class actionSpace(instanceId:Option[String]) extends GymApi

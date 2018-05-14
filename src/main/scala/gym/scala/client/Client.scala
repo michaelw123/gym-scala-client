@@ -23,10 +23,19 @@ import scala.util.{Failure, Success}
 class Client(val host:String, val port:Int) {
   case class GymInstance(instance_id:String)
   object GymInstance extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val folderFormat = jsonFormat1(GymInstance.apply)
+    implicit val gymInstanceFormat = jsonFormat1(GymInstance.apply)
+  }
+  case class GymEnv (gymInstance:GymInstance, env_id:String)
+  object GymEnv extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val gymEnvFormat = jsonFormat2(GymEnv.apply)
   }
 
-
+  case class GymAllEnvs(instance_id:String){
+    val envs:Seq[GymEnv]=Seq()
+  }
+  object GymAllEnvs extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val gymAllEnvsFormat = jsonFormat1(GymAllEnvs.apply)
+  }
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
   implicit val system: ActorSystem = ActorSystem()
@@ -46,8 +55,8 @@ class Client(val host:String, val port:Int) {
                case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
                  val ss = Unmarshal(entity).to[GymInstance]
                  ss onComplete {
-                   case   Success(json) => println(s"json=${json.instance_id}")
-                    case   Failure(t) => println("An error has occurred: " + t.getMessage)
+                   case   Success(gymInstance) => println(s"instance_id=${gymInstance.instance_id}")
+                   case   Failure(t) => println("An error has occurred: " + t.getMessage)
                  }
                 // println(s"ss=${ss.toString}")
                case HttpResponse(code, _, entity, _) => println("status is not OK")
@@ -108,12 +117,19 @@ class Client(val host:String, val port:Int) {
         val uri=host+":"+port+envRoot
         val http = HttpRequest(uri = uri).withMethod(HttpMethods.GET).withEntity(HttpEntity(contentType,""))
         val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
-        responseFuture map {
-          case response @ HttpResponse(StatusCodes.OK, _, _, _) =>
-            println(response)
-            response.discardEntityBytes()
-          case response @ HttpResponse(code, _, _, _) => sys.error("something went wrong")
-            response.discardEntityBytes()
+        responseFuture  onComplete {
+          case Success(response) => println(response)
+            response match {
+              case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
+                val ss = Unmarshal(entity).to[GymAllEnvs]
+                ss onComplete {
+                  case   Success(gymAllEnvs) => println(s"instance_id=${gymAllEnvs}")
+                  case   Failure(t) => println("An error has occurred: " + t.getMessage)
+                }
+              // println(s"ss=${ss.toString}")
+              case HttpResponse(code, _, entity, _) => println("status is not OK")
+            }
+          case  Failure(t) => println("An error has occurred: " + t.getMessage)
         }
     }
   }
