@@ -43,19 +43,21 @@ import scala.util.{Failure, Success}
   */
 trait client{
   def execute[T, S](command: T): S
+  def terminate
 }
 object client {
   implicit val system = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-  val host:String="http://127.0.0.1"
+  var host:String="http://127.0.0.1"
   val port:Int=5000
   val timeout=10
 
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
   val uri = host + ":" + port + envRoot
+  def terminate = system.terminate
   implicit def execute(command:listEnvs): GymAllEnvs = {
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
     val h = Http()
@@ -69,7 +71,6 @@ object client {
     }
     println(s"envs=$envs")
     h.shutdownAllConnectionPools
-    system.terminate
     envs
 //    val result = responseFuture.map {
 //      case HttpResponse(StatusCodes.OK, headers, entity, _) =>

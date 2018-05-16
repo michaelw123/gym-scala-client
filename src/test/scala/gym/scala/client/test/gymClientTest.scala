@@ -31,6 +31,7 @@ object gymClientTest extends App {
    val listEnvs = new listEnvs
    val envs = client.execute(listEnvs)
   println(s"client: $envs")
+  client.terminate
    //val createEnv = new createEnv(None, "CartPole-v0")
    //val result = client.execute(createEnv)
 
