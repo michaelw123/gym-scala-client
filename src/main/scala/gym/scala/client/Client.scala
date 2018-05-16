@@ -41,56 +41,103 @@ import scala.util.{Failure, Success}
 /**
   * Created by Michael Wang on 04/26/2018.
   */
-class Client(val host:String, val port:Int) {
-  val contentType = ContentTypes.`application/json`
-  val envRoot = "/v1/envs/"
-  val uri=host+":"+port+envRoot
-  implicit val system: ActorSystem = ActorSystem()
+trait client{
+  def execute[T, S](command: T): S
+}
+object client {
+  implicit val system = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-  def execute(command:GymApi): Unit = {
-    val http = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType,command.source))
-    val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
+  val host:String="http://127.0.0.1"
+  val port:Int=5000
+  val timeout=10
 
-    command match {
-      case c: createEnv => println("createEnv")
-        responseFuture  onComplete {
-          case Success(response) => println(response)
-            response match {
-               case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
-                 val ss = Unmarshal(entity).to[GymInstance]
-                 ss onComplete {
-                   case   Success(gymInstance) => println(s"instance_id=${gymInstance.instance_id}")
-                   case   Failure(t) => println("An error has occurred: " + t.getMessage)
-                 }
-                // println(s"ss=${ss.toString}")
-               case HttpResponse(code, _, entity, _) => println("status is not OK")
-            }
-          case  Failure(t) => println("An error has occurred: " + t.getMessage)
-        }
-
-      case c: listEnvs => println("listEnvs")
-          responseFuture  onComplete {
-          case Success(response) => println(response)
-            response match {
-              case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
-                val ss = Unmarshal(entity).to[GymAllEnvs]
-                ss onComplete {
-                  case   Success(gymAllEnvs) => println(s"instance_id=${gymAllEnvs}")
-                  case   Failure(t) => println("An error has occurred: " + t.getMessage)
-                }
-              // println(s"ss=${ss.toString}")
-              case HttpResponse(code, _, entity, _) => println("status is not OK")
-            }
-          case  Failure(t) => println("An error has occurred: " + t.getMessage)
-        }
-      case c: resetEnv => println("resetEnv")
-          val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
-        responseFuture  onComplete {
-          case Success(response) => println(response)
-          case Failure(t) => println("An error has occurred: " + t.getMessage)
-        }
+  val contentType = ContentTypes.`application/json`
+  val envRoot = "/v1/envs/"
+  val uri = host + ":" + port + envRoot
+  implicit def execute(command:listEnvs): GymAllEnvs = {
+    val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
+    val h = Http()
+    val responseFuture: Future[HttpResponse] = h.singleRequest(httpRequest)
+    val resp =  Await.result(responseFuture, timeout.second)
+    println(s"resp=$resp")
+    val envs:GymAllEnvs = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymAllEnvs], timeout.second)
+  //    case x =>  GymAllEnvs
+        //s"Unexpected status code ${x.status}"
     }
+    println(s"envs=$envs")
+    h.shutdownAllConnectionPools
+    system.terminate
+    envs
+//    val result = responseFuture.map {
+//      case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+//        val envs = Await.result(Unmarshal(entity).to[GymAllEnvs], 10.second)
+//        println(s"env=$envs")
+//        envs
+//      case x => s"Unexpected status code ${x.status}"
+//    }
+//    println(s"result=$result")
+    //system.shutdown()
   }
+
+//    val ss = responseFuture.map {
+//      case response@HttpResponse(StatusCodes.OK, _, entity, _) =>
+//        println(s"entity=$entity")
+//        Unmarshal(entity).to[GymAllEnvs]
+//      //        ss onComplete {
+//      //          case Success(gymAllEnvs) => println(s"gymAllEnvs=${gymAllEnvs}")
+//      //          case Failure(t) => println("An error has occurred: " + t.getMessage)
+//      //        }
+//      case _ => sys.error("something wrong")
+//    }
+//  }
+//    val ret:GymAllEnvs = null
+//    ss onComplete {
+//      case Success(gymAllEnvs) => println(s"gymAllEnvs=${gymAllEnvs}")
+//        ret = gymAllEnvs
+//      case Failure(t) => println("An error has occurred: " + t.getMessage)
+//    }
+//    ret
+//    command match {
+//      case c: createEnv => println("createEnv")
+//        responseFuture  onComplete {
+//          case Success(response) => println(response)
+//            response match {
+//               case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
+//                 val ss = Unmarshal(entity).to[GymInstance]
+//                 ss onComplete {
+//                   case   Success(gymInstance) => println(s"instance_id=${gymInstance.instance_id}")
+//                   case   Failure(t) => println("An error has occurred: " + t.getMessage)
+//                 }
+//                // println(s"ss=${ss.toString}")
+//               case HttpResponse(code, _, entity, _) => println("status is not OK")
+//            }
+//          case  Failure(t) => println("An error has occurred: " + t.getMessage)
+//        }
+//
+//      case c: listEnvs => println("listEnvs")
+//          responseFuture  onComplete {
+//          case Success(response) => println(response)
+//            response match {
+//              case HttpResponse(StatusCodes.OK, headers, entity, _) =>  println(s"entity=$entity")
+//                val ss = Unmarshal(entity).to[GymAllEnvs]
+//                ss onComplete {
+//                  case   Success(gymAllEnvs) => println(s"instance_id=${gymAllEnvs}")
+//                  case   Failure(t) => println("An error has occurred: " + t.getMessage)
+//                }
+//              // println(s"ss=${ss.toString}")
+//              case HttpResponse(code, _, entity, _) => println("status is not OK")
+//            }
+//          case  Failure(t) => println("An error has occurred: " + t.getMessage)
+//        }
+//      case c: resetEnv => println("resetEnv")
+//          val responseFuture: Future[HttpResponse] = Http().singleRequest(http)
+//        responseFuture  onComplete {
+//          case Success(response) => println(response)
+//          case Failure(t) => println("An error has occurred: " + t.getMessage)
+//        }
+//    }
+//  }
 }
