@@ -29,9 +29,9 @@ sealed trait GymApi {
   val instanceId:Option[String]
   val source:String
 }
-case class createEnv(instanceId:Option[String] = None, envId:String) extends GymApi {
+case class createEnv(val instanceId:Option[String] = None, val envId:String) extends GymApi {
   override val method = HttpMethods.POST
-  override val source = """{ "env_id": "${envId}" }"""
+  override val source = s"""{ "env_id": "${envId}" }"""
 }
 case class listEnvs(instanceId:Option[String] = None) extends GymApi{
   override val method = HttpMethods.GET

@@ -69,30 +69,29 @@ object gymClient {
     this
   }
   implicit def execute(command:listEnvs): GymAllEnvs = {
+    println("listEnvs")
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
-    val h = Http()
-    val responseFuture: Future[HttpResponse] = h.singleRequest(httpRequest)
-    val resp =  Await.result(responseFuture, timeout.second)
+    val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
+    val resp =  Await.result(responseFuture, _timeout.second)
     println(s"resp=$resp")
     val envs:GymAllEnvs = resp match {
-      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymAllEnvs], timeout.second)
-  //    case x =>  GymAllEnvs
-        //s"Unexpected status code ${x.status}"
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymAllEnvs], _timeout.second)
     }
     println(s"envs=$envs")
-    h.shutdownAllConnectionPools
     envs
-//    val result = responseFuture.map {
-//      case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-//        val envs = Await.result(Unmarshal(entity).to[GymAllEnvs], 10.second)
-//        println(s"env=$envs")
-//        envs
-//      case x => s"Unexpected status code ${x.status}"
-//    }
-//    println(s"result=$result")
-    //system.shutdown()
   }
-
+  implicit def execute(command:createEnv):GymInstance = {
+    println("createEnv")
+    val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
+    val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
+    val resp =  Await.result(responseFuture, _timeout.second)
+    println(s"resp=$resp")
+    val instance:GymInstance = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInstance], _timeout.second)
+    }
+    println(s"envs=$instance")
+    instance
+  }
 //    val ss = responseFuture.map {
 //      case response@HttpResponse(StatusCodes.OK, _, entity, _) =>
 //        println(s"entity=$entity")
