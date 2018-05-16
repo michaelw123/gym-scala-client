@@ -34,7 +34,7 @@ case class GymAllEnvs(all_envs:Map[String, String])
 object GymAllEnvs extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val gymAllEnvsFormat = jsonFormat1(GymAllEnvs.apply)
 }
-case class GymObservation (a:Float, b:Float, c:Float, d:Float)
+case class GymObservation (observation:List[Float])
 object GymObservation extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val gymObservationFormat = jsonFormat4(GymObservation.apply)
+  implicit val gymObservationFormat = jsonFormat1(GymObservation.apply)
 }
