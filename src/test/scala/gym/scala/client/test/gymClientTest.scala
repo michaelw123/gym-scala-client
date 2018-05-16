@@ -27,11 +27,13 @@ import gym.scala.client._
 object gymClientTest extends App {
 
    //val client = new Client("http://127.0.0.1", 5000)
-  //client.host("http://127.0.0.1").port(5000)
-   val listEnvs = new listEnvs
-   val envs = client.execute(listEnvs)
+  gymClient.host("http://127.0.0.1")
+    .port(5000)
+    .timeout(10)
+  val listEnvs = new listEnvs
+  val envs = gymClient.execute(listEnvs)
   println(s"client: $envs")
-  client.terminate
+  gymClient.terminate
    //val createEnv = new createEnv(None, "CartPole-v0")
    //val result = client.execute(createEnv)
 

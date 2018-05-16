@@ -41,23 +41,33 @@ import scala.util.{Failure, Success}
 /**
   * Created by Michael Wang on 04/26/2018.
   */
-trait client{
+trait gymClient{
   def execute[T, S](command: T): S
-  def terminate
 }
-object client {
+object gymClient {
   implicit val system = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-  var host:String="http://127.0.0.1"
-  val port:Int=5000
-  val timeout=10
-
+  var _host:String="http://127.0.0.1"
+  var _port:Int=5000
+  var _timeout=10
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
-  val uri = host + ":" + port + envRoot
+  val uri = _host + ":" + _port + envRoot
   def terminate = system.terminate
+  def host(h:String): this.type = {
+    _host=h
+    this
+  }
+  def port(p:Int):this.type = {
+    _port = p
+    this
+  }
+  def timeout(t:Int):this.type = {
+    _timeout = t
+    this
+  }
   implicit def execute(command:listEnvs): GymAllEnvs = {
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
     val h = Http()

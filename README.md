@@ -1,5 +1,5 @@
 # gym-scala-client
-In Progress ... 
+In Progress ...
 
 A scala RESTful client for openai gym that allows Scala to have an access to openai gym through http using akka-http, spray-json
 
