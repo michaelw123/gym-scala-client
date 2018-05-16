@@ -31,9 +31,13 @@ object gymClientTest extends App {
   val listEnvs = new listEnvs
   val envs = gymClient.execute(listEnvs)
   println(s"client: $envs")
- // gymClient.terminate
+
   val createEnv = new createEnv(None, "CartPole-v0")
-  val result = gymClient.execute(createEnv)
+  val gymInstance = gymClient.execute(createEnv)
+
+  val reset = resetEnv(gymInstance)
+  gymClient.execute(reset)
+
   gymClient.terminate
  // val reset = new resetEnv(Option("0b4741c9"))
  // client.execute(reset)

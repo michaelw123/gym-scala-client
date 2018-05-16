@@ -33,13 +33,13 @@ case class createEnv(val instanceId:Option[String] = None, val envId:String) ext
   override val method = HttpMethods.POST
   override val source = s"""{ "env_id": "${envId}" }"""
 }
-case class listEnvs(instanceId:Option[String] = None) extends GymApi{
+case class listEnvs(instanceId:String) extends GymApi{
   override val method = HttpMethods.GET
   override val source = """{}"""
 }
-case class resetEnv(instanceId:Option[String]) extends GymApi{
+case class resetEnv(val instanceId:GymInstance) extends GymApi{
   override val method = HttpMethods.POST
-  override val source = """{ "instance_id": "${instanceId.get}" }"""
+  override val source = """{ "instance_id": "${instanceId.instance_id_}" }"""
 }
 //case class step(instanceId:Option[String]) extends GymApi
 //case class actionSpace(instanceId:Option[String]) extends GymApi
