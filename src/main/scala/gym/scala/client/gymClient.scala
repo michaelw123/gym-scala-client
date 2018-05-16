@@ -53,7 +53,6 @@ object gymClient {
   var _port:Int=5000
   var _timeout=10
   val contentType = ContentTypes.`application/json`
-  val envRoot = "/v1/envs/"
   def terminate = system.terminate
   def host(h:String): this.type = {
     _host=h
@@ -67,7 +66,7 @@ object gymClient {
     _timeout = t
     this
   }
-  def reqResp(command:GymApi) :HttpResponse = {
+  def reqResp(command:GymApi):HttpResponse = {
     val uri = _host + ":" + _port + command.uri
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
@@ -75,10 +74,7 @@ object gymClient {
   }
   implicit def execute(command:listEnvs): GymAllEnvs = {
     println("listEnvs")
-    val uri = _host + ":" + _port + command.uri
-    val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
-    val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
-    val resp =  Await.result(responseFuture, _timeout.second)
+    val resp = reqResp(command)
     println(s"resp=$resp")
     val envs:GymAllEnvs = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymAllEnvs], _timeout.second)
@@ -88,10 +84,7 @@ object gymClient {
   }
   implicit def execute(command:createEnv):GymInstance = {
     println("createEnv")
-    val uri = _host + ":" + _port + command.uri
-    val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
-    val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
-    val resp =  Await.result(responseFuture, _timeout.second)
+    val resp = reqResp(command)
     println(s"resp=$resp")
     val instance:GymInstance = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInstance], _timeout.second)
@@ -99,5 +92,7 @@ object gymClient {
     println(s"envs=$instance")
     instance
   }
-  //implicit def execute(command:resetEnv):
+//  implicit def execute(command:resetEnv):GymObservation = {
+//
+//  }
 }
