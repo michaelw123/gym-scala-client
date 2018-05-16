@@ -26,18 +26,18 @@ sealed trait GymApi {
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
   val method = HttpMethods.POST
-  val instanceId:Option[String]
+  val instanceId:GymInstance = null
   val source:String
 }
-case class createEnv(val instanceId:Option[String] = None, val envId:String) extends GymApi {
+case class createEnv( val envId:String) extends GymApi {
   override val method = HttpMethods.POST
   override val source = s"""{ "env_id": "${envId}" }"""
 }
-case class listEnvs(instanceId:String) extends GymApi{
+case class listEnvs(override val instanceId:GymInstance = null) extends GymApi{
   override val method = HttpMethods.GET
   override val source = """{}"""
 }
-case class resetEnv(val instanceId:GymInstance) extends GymApi{
+case class resetEnv(override val instanceId:GymInstance) extends GymApi{
   override val method = HttpMethods.POST
   override val source = """{ "instance_id": "${instanceId.instance_id_}" }"""
 }

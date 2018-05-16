@@ -68,6 +68,11 @@ object gymClient {
     _timeout = t
     this
   }
+  def reqResp(command:GymApi) :HttpResponse = {
+    val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
+    val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
+    Await.result(responseFuture, _timeout.second)
+  }
   implicit def execute(command:listEnvs): GymAllEnvs = {
     println("listEnvs")
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
@@ -92,5 +97,5 @@ object gymClient {
     println(s"envs=$instance")
     instance
   }
-  implicit def execute(command:resetEnv):
+  //implicit def execute(command:resetEnv):
 }
