@@ -69,6 +69,7 @@ object gymClient {
   def reqResp(command:GymApi):HttpResponse = {
     val uri = _host + ":" + _port + command.uri
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
+    println(s"http request: ${uri}, ${command.source}")
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     Await.result(responseFuture, _timeout.second)
   }
@@ -92,7 +93,14 @@ object gymClient {
     println(s"envs=$instance")
     instance
   }
-//  implicit def execute(command:resetEnv):GymObservation = {
-//
-//  }
+  implicit def execute(command:resetEnv):GymObservation = {
+    println("resetEnv")
+    val resp = reqResp(command)
+    println(s"resp=$resp")
+    val gymObservation:GymObservation = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymObservation], _timeout.second)
+    }
+    println(s"gymObservation=$gymObservation")
+    gymObservation
+  }
 }

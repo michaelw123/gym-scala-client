@@ -28,7 +28,7 @@ sealed trait GymApi {
   val envRoot = "/v1/envs/"
   val method = HttpMethods.POST
   val gymInstance:GymInstance = GymInstance.apply("")
-  val source:String
+  val source:String = """{}"""
   val uri=envRoot
 }
 case class createEnv( val envId:String) extends GymApi {
@@ -37,12 +37,11 @@ case class createEnv( val envId:String) extends GymApi {
 }
 case class listEnvs(override val gymInstance:GymInstance = GymInstance.apply("")) extends GymApi{
   override val method = HttpMethods.GET
-  override val source = """{}"""
 }
 case class resetEnv(override val gymInstance:GymInstance) extends GymApi{
   override val method = HttpMethods.POST
-  override val source = """{ "instance_id": "${instanceId.instance_id_}" }"""
-  override val uri=s"${envRoot}${gymInstance.instance_id}/reset"
+  //override val source = s"""{ "instance_id": "${gymInstance.instance_id}" }"""
+  override val uri=s"${envRoot}${gymInstance.instance_id}/reset/"
 }
 //case class step(instanceId:Option[String]) extends GymApi
 //case class actionSpace(instanceId:Option[String]) extends GymApi
