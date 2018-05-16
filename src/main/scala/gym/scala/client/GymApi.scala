@@ -1,6 +1,7 @@
 package gym.scala.client
 
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, HttpRequest}
+import com.typesafe.config.ConfigException.Null
 
 /*
  * Copyright (c) 2017 Michael Wang
@@ -26,20 +27,22 @@ sealed trait GymApi {
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
   val method = HttpMethods.POST
-  val instanceId:GymInstance = null
+  val gymInstance:GymInstance = GymInstance.apply("")
   val source:String
+  val uri=envRoot
 }
 case class createEnv( val envId:String) extends GymApi {
   override val method = HttpMethods.POST
   override val source = s"""{ "env_id": "${envId}" }"""
 }
-case class listEnvs(override val instanceId:GymInstance = null) extends GymApi{
+case class listEnvs(override val gymInstance:GymInstance = GymInstance.apply("")) extends GymApi{
   override val method = HttpMethods.GET
   override val source = """{}"""
 }
-case class resetEnv(override val instanceId:GymInstance) extends GymApi{
+case class resetEnv(override val gymInstance:GymInstance) extends GymApi{
   override val method = HttpMethods.POST
   override val source = """{ "instance_id": "${instanceId.instance_id_}" }"""
+  override val uri=s"${envRoot}${gymInstance.instance_id}/reset"
 }
 //case class step(instanceId:Option[String]) extends GymApi
 //case class actionSpace(instanceId:Option[String]) extends GymApi

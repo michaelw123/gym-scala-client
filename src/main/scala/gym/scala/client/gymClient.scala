@@ -54,7 +54,6 @@ object gymClient {
   var _timeout=10
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
-  val uri = _host + ":" + _port + envRoot
   def terminate = system.terminate
   def host(h:String): this.type = {
     _host=h
@@ -69,12 +68,14 @@ object gymClient {
     this
   }
   def reqResp(command:GymApi) :HttpResponse = {
+    val uri = _host + ":" + _port + command.uri
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     Await.result(responseFuture, _timeout.second)
   }
   implicit def execute(command:listEnvs): GymAllEnvs = {
     println("listEnvs")
+    val uri = _host + ":" + _port + command.uri
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     val resp =  Await.result(responseFuture, _timeout.second)
@@ -87,6 +88,7 @@ object gymClient {
   }
   implicit def execute(command:createEnv):GymInstance = {
     println("createEnv")
+    val uri = _host + ":" + _port + command.uri
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     val resp =  Await.result(responseFuture, _timeout.second)
