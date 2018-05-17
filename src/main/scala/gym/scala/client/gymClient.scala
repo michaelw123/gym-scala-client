@@ -113,4 +113,16 @@ object gymClient {
     println(s"gymInfo=${gymInfo}")
     gymInfo
   }
+
+  implicit def execute(command:obsSpace):GymInfo = {
+    println("observation_space")
+    val resp = reqResp(command)
+    println(s"resp=$resp")
+    val gymInfo:GymInfo = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInfo], _timeout.second)
+    }
+    println(s"gymInfo=${gymInfo}")
+    gymInfo
+  }
+
 }

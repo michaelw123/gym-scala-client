@@ -47,7 +47,10 @@ case class actionSpace(override val gymInstance:GymInstance) extends GymApi{
   override val method = HttpMethods.GET
   override val uri=s"${envRoot}${gymInstance.instance_id}/action_space/"
 }
-//case class obsSpace(instanceId:Option[String]) extends GymApi
+case class obsSpace(override val gymInstance:GymInstance) extends GymApi{
+  override val method = HttpMethods.GET
+  override val uri=s"${envRoot}${gymInstance.instance_id}/observation_space/"
+}
 //case class monitorStart(instanceId:Option[String]) extends GymApi
 //case class monitorFlush(instanceId:Option[String]) extends GymApi
 //case class monitorUpload(instanceId:Option[String]) extends GymApi

@@ -36,10 +36,13 @@ object gymClientTest extends App {
   val gymInstance = gymClient.execute(createEnv)
 
   val reset = resetEnv(gymInstance)
-  gymClient.execute(reset)
+  val gymObs = gymClient.execute(reset)
 
   val info = actionSpace(gymInstance)
-  gymClient.execute(info)
+  val gymActionSpace = gymClient.execute(info)
+
+  val obsspace = obsSpace(gymInstance)
+  val gymObsSpace = gymClient.execute(obsspace)
 
   gymClient.terminate
 }
