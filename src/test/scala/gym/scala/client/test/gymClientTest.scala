@@ -32,7 +32,7 @@ object gymClientTest extends App {
   val envs = gymClient.execute(listEnvs)
   println(s"client: $envs")
 
-  val createEnv = new createEnv("TimePilot-ram-v0")
+  val createEnv = new createEnv("CartPole-v0")
   val gymInstance = gymClient.execute(createEnv)
 
   val reset = resetEnv(gymInstance)

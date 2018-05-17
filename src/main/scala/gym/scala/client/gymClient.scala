@@ -110,7 +110,7 @@ object gymClient {
     val gymInfo:GymInfo = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInfo], _timeout.second)
     }
-    println(s"gymInfo=${gymInfo.info}")
+    println(s"gymInfo=${gymInfo}")
     gymInfo
   }
 }
