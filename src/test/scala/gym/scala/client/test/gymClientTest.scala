@@ -47,8 +47,14 @@ object gymClientTest extends App {
   val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
 
+  val step0 = step(gymInstance)
+  val gymStepInfo = gymClient.execute(step0)
+
  val  monitorclose = monitorClose(gymInstance)
   gymClient.execute(monitorclose)
+
+  val  shutDown = shutdown()
+  gymClient.execute(shutDown)
 
   gymClient.terminate
 }

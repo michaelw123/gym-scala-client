@@ -56,3 +56,7 @@ case class GymObsInfo(info:ObsInfo)
 object GymObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val gymInfoFormat = jsonFormat1(GymObsInfo.apply)
 }
+case class GymStepInfo(observation:List[Double], reward:Int, done:Boolean, info:Map[String, String])
+object GymStepInfo extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit val gymStepFormat = jsonFormat4(GymStepInfo.apply)
+}

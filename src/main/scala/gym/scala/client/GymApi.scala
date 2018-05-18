@@ -40,9 +40,11 @@ case class listEnvs(override val gymInstance:GymInstance = GymInstance.apply("")
 case class resetEnv(override val gymInstance:GymInstance) extends GymApi{
   override val uri=s"${envRoot}${gymInstance.instance_id}/reset/"
 }
-//case class step(instanceId:Option[String]) extends GymApi {
-//  override val uri=s"${envRoot}${gymInstance.instance_id}/step/"
-//}
+case class step(override val gymInstance:GymInstance) extends GymApi {
+  override val source = s"""{ "action": 0, "render": true }"""
+  override val uri=s"${envRoot}${gymInstance.instance_id}/step/"
+}
+
 case class actionSpace(override val gymInstance:GymInstance) extends GymApi{
   override val method = HttpMethods.GET
   override val uri=s"${envRoot}${gymInstance.instance_id}/action_space/"
@@ -59,6 +61,8 @@ case class monitorClose(override val gymInstance:GymInstance) extends GymApi{
   override val uri=s"${envRoot}${gymInstance.instance_id}/monitor/close/"
 }
 //case class monitorUpload(instanceId:Option[String]) extends GymApi
-//case class shutdown(instanceId:Option[String]=None) extends GymApi
+case class shutdown() extends GymApi {
+  override val uri="/v1/shutdown/"
+}
 
 

@@ -134,4 +134,19 @@ object gymClient {
     val resp = reqResp(command)
     println(s"resp=$resp")
   }
+  implicit def execute(command:shutdown):Unit = {
+    println("shutdown")
+    val resp = reqResp(command)
+    println(s"resp=$resp")
+  }
+  implicit def execute(command:step):GymStepInfo = {
+    println("step")
+    val resp = reqResp(command)
+    println(s"resp=$resp")
+    val stepInfo:GymStepInfo = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymStepInfo], _timeout.second)
+    }
+    println(s"gymInfo=${stepInfo}")
+    stepInfo
+  }
 }
