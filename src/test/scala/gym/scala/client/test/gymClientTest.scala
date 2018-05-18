@@ -35,6 +35,9 @@ object gymClientTest extends App {
   val createEnv = new createEnv("CartPole-v0")
   val gymInstance = gymClient.execute(createEnv)
 
+  val monitorstart = monitorStart(gymInstance)
+  gymClient.execute(monitorstart)
+
   val reset = resetEnv(gymInstance)
   val gymObs = gymClient.execute(reset)
 
@@ -43,6 +46,9 @@ object gymClientTest extends App {
 
   val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
+
+ val  monitorclose = monitorClose(gymInstance)
+  gymClient.execute(monitorclose)
 
   gymClient.terminate
 }

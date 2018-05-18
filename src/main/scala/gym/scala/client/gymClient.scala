@@ -124,5 +124,14 @@ object gymClient {
     println(s"gymInfo=${gymInfo}")
     gymInfo
   }
-
+  implicit def execute(command:monitorStart):Unit = {
+    println("monitor start")
+    val resp = reqResp(command)
+    println(s"resp=$resp")
+  }
+  implicit def execute(command:monitorClose):Unit = {
+    println("monitor close")
+    val resp = reqResp(command)
+    println(s"resp=$resp")
+  }
 }
