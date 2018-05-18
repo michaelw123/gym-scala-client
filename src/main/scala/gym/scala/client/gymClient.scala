@@ -103,23 +103,23 @@ object gymClient {
     println(s"gymObservation=${gymObservation.observation}")
     gymObservation
   }
-  implicit def execute(command:actionSpace):GymInfo = {
+  implicit def execute(command:actionSpace):GymActionInfo = {
     println("action_space")
     val resp = reqResp(command)
     println(s"resp=$resp")
-    val gymInfo:GymInfo = resp match {
-      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInfo], _timeout.second)
+    val gymInfo:GymActionInfo = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymActionInfo], _timeout.second)
     }
     println(s"gymInfo=${gymInfo}")
     gymInfo
   }
 
-  implicit def execute(command:obsSpace):GymInfo = {
+  implicit def execute(command:obsSpace):GymObsInfo = {
     println("observation_space")
     val resp = reqResp(command)
     println(s"resp=$resp")
-    val gymInfo:GymInfo = resp match {
-      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInfo], _timeout.second)
+    val gymInfo:GymObsInfo = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymObsInfo], _timeout.second)
     }
     println(s"gymInfo=${gymInfo}")
     gymInfo

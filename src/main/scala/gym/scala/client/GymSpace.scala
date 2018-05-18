@@ -38,11 +38,21 @@ case class GymObservation (observation:List[Float])
 object GymObservation extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val gymObservationFormat = jsonFormat1(GymObservation.apply)
 }
-case class Info(name:String, n:Int)
-object Info extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val infoFormat = jsonFormat2(Info.apply)
+case class ActionInfo(name:String, n:Int)
+object ActionInfo extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit val infoFormat = jsonFormat2(ActionInfo.apply)
 }
-case class GymInfo(info:Info)
-object GymInfo extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val gymInfoFormat = jsonFormat1(GymInfo.apply)
+case class GymActionInfo(info:ActionInfo)
+object GymActionInfo extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit val gymInfoFormat = jsonFormat1(GymActionInfo.apply)
+}
+
+case class ObsInfo(high:List[Double], low:List[Double], name:String, shape:List[Int])
+object ObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit val infoFormat = jsonFormat4(ObsInfo.apply)
+}
+
+case class GymObsInfo(info:ObsInfo)
+object GymObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit val gymInfoFormat = jsonFormat1(GymObsInfo.apply)
 }
