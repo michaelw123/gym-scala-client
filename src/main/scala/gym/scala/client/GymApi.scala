@@ -54,7 +54,7 @@ case class obsSpace(override val gymInstance:GymInstance) extends GymApi{
   override val uri=s"${envRoot}${gymInstance.instance_id}/observation_space/"
 }
 case class monitorStart(override val gymInstance:GymInstance) extends GymApi{
-  override val source = s"""{ "resume": false, "directory": "/openai/tmp", "force": false }"""
+  override val source = s"""{ "resume": false, "directory": "/openai/tmp", "force": true }"""
   override val uri=s"${envRoot}${gymInstance.instance_id}/monitor/start/"
 }
 case class monitorClose(override val gymInstance:GymInstance) extends GymApi{
