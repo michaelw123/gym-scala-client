@@ -20,23 +20,16 @@
  */
 package gym.scala.client
 
-import spray.json._
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpEntity, _}
 
 import scala.concurrent.duration._
 import akka.stream.ActorMaterializer
-import akka.actor.Actor
+import gym.scala.client.GymSpace._
 import akka.http.scaladsl.unmarshalling._
-import akka.http.scaladsl.unmarshalling.PredefinedFromStringUnmarshallers._
-import akka.util.ByteString
+import scala.concurrent.{Await, ExecutionContextExecutor, Future}
 
-import scala.util.parsing.json._
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-
-import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Future}
-import scala.util.{Failure, Success}
 
 /**
   * Created by Michael Wang on 04/26/2018.

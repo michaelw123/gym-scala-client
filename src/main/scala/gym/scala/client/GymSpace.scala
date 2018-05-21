@@ -26,37 +26,54 @@ import spray.json.DefaultJsonProtocol
 /**
   * Created by Michael Wang on 2018-05-13.
   */
-case class GymInstance(instance_id:String)
-object GymInstance extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val gymInstanceFormat = jsonFormat1(GymInstance.apply)
-}
-case class GymAllEnvs(all_envs:Map[String, String])
-object GymAllEnvs extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val gymAllEnvsFormat = jsonFormat1(GymAllEnvs.apply)
-}
-case class GymObservation (observation:List[Float])
-object GymObservation extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val gymObservationFormat = jsonFormat1(GymObservation.apply)
-}
-case class ActionInfo(name:String, n:Int)
-object ActionInfo extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val infoFormat = jsonFormat2(ActionInfo.apply)
-}
-case class GymActionInfo(info:ActionInfo)
-object GymActionInfo extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val gymInfoFormat = jsonFormat1(GymActionInfo.apply)
-}
+object GymSpace {
 
-case class ObsInfo(high:List[Double], low:List[Double], name:String, shape:List[Int])
-object ObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val infoFormat = jsonFormat4(ObsInfo.apply)
-}
+  case class GymInstance(instance_id: String)
 
-case class GymObsInfo(info:ObsInfo)
-object GymObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val gymInfoFormat = jsonFormat1(GymObsInfo.apply)
-}
-case class GymStepInfo(observation:List[Double], reward:Float, done:Boolean, info:Map[String, String])
-object GymStepInfo extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val gymStepFormat = jsonFormat4(GymStepInfo.apply)
+  object GymInstance extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val gymInstanceFormat = jsonFormat1(GymInstance.apply)
+  }
+
+  case class GymAllEnvs(all_envs: Map[String, String])
+
+  object GymAllEnvs extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val gymAllEnvsFormat = jsonFormat1(GymAllEnvs.apply)
+  }
+
+  case class GymObservation(observation: List[Float])
+
+  object GymObservation extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val gymObservationFormat = jsonFormat1(GymObservation.apply)
+  }
+
+  case class ActionInfo(name: String, n: Int)
+
+  object ActionInfo extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val infoFormat = jsonFormat2(ActionInfo.apply)
+  }
+
+  case class GymActionInfo(info: ActionInfo)
+
+  object GymActionInfo extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val gymInfoFormat = jsonFormat1(GymActionInfo.apply)
+  }
+
+  case class ObsInfo(high: List[Double], low: List[Double], name: String, shape: List[Int])
+
+  object ObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val infoFormat = jsonFormat4(ObsInfo.apply)
+  }
+
+  case class GymObsInfo(info: ObsInfo)
+
+  object GymObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val gymInfoFormat = jsonFormat1(GymObsInfo.apply)
+  }
+
+  case class GymStepInfo(observation: List[Double], reward: Float, done: Boolean, info: Map[String, String])
+
+  object GymStepInfo extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val gymStepFormat = jsonFormat4(GymStepInfo.apply)
+  }
+
 }

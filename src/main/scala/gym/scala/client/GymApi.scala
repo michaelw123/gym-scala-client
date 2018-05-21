@@ -1,7 +1,7 @@
 package gym.scala.client
 
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, HttpRequest}
-import com.typesafe.config.ConfigException.Null
+import gym.scala.client.GymSpace._
 
 /*
  * Copyright (c) 2017 Michael Wang
