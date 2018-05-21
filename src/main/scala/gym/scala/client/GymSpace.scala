@@ -80,11 +80,15 @@ object GymSpace {
 object GymSpace1 {
   trait Action
   trait Observation
-  
+
   trait Space
   trait DiscreteSpace
   trait BoxSpace
-  trait ActionSpace
+  trait ActionSpace[A] {
+    def randomAction:A
+
+    val n:Int
+  }
   trait ObservationSpace
 
 }
