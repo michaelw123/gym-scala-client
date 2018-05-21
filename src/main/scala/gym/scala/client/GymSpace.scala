@@ -77,3 +77,14 @@ object GymSpace {
   }
 
 }
+object GymSpace1 {
+  trait Action
+  trait Observation
+  
+  trait Space
+  trait DiscreteSpace
+  trait BoxSpace
+  trait ActionSpace
+  trait ObservationSpace
+
+}
