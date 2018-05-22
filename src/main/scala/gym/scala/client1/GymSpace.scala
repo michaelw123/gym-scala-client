@@ -18,10 +18,13 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package gym.scala.client
+package gym.scala.client1
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json.DefaultJsonProtocol
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import gym.scala.client.GymSpace.GymActionInfo.jsonFormat1
+import gym.scala.client1.GymSpace.DiscreteSpace.jsonFormat2
+import gym.scala.client1.GymSpace.Observation.jsonFormat1
 
 /**
   * Created by Michael Wang on 2018-05-13.
@@ -40,45 +43,6 @@ object GymSpace {
     implicit val gymAllEnvsFormat = jsonFormat1(GymAllEnvs.apply)
   }
 
-  case class GymObservation(observation: List[Float])
-
-  object GymObservation extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val gymObservationFormat = jsonFormat1(GymObservation.apply)
-  }
-
-  case class ActionInfo(name: String, n: Int)
-
-  object ActionInfo extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val infoFormat = jsonFormat2(ActionInfo.apply)
-  }
-
-  case class GymActionInfo(info: ActionInfo)
-
-  object GymActionInfo extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val gymInfoFormat = jsonFormat1(GymActionInfo.apply)
-  }
-
-  case class ObsInfo(high: List[Double], low: List[Double], name: String, shape: List[Int])
-
-  object ObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val infoFormat = jsonFormat4(ObsInfo.apply)
-  }
-
-  case class GymObsInfo(info: ObsInfo)
-
-  object GymObsInfo extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val gymInfoFormat = jsonFormat1(GymObsInfo.apply)
-  }
-
-  case class GymStepInfo(observation: List[Double], reward: Float, done: Boolean, info: Map[String, String])
-
-  object GymStepInfo extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val gymStepFormat = jsonFormat4(GymStepInfo.apply)
-  }
-
-}
-object GymSpace1 {
-
   trait Space
   case class DiscreteSpace(name: String, n: Int) extends Space{
     def randomAction:Int = {
@@ -86,16 +50,17 @@ object GymSpace1 {
       r.nextInt(n)
     }
   }
-  object DiscreteSpace  extends DefaultJsonProtocol with SprayJsonSupport {
+  object DiscreteSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val discreteSpaceFormat = jsonFormat2(DiscreteSpace.apply)
+  }
+  case class ActionSpace(info: DiscreteSpace)
+
+  object ActionSpace extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val actionSpaceFormat = jsonFormat1(ActionSpace.apply)
   }
   case class BoxSpace(high: List[Double], low: List[Double], name: String, shape: List[Int])
   object BoxSpace  extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val boxSpaceFormat = jsonFormat4(BoxSpace.apply)
-  }
-
-  class ActionSpace(space:DiscreteSpace)  {
-    def randomAction:Int = space.randomAction
   }
 
   case class Observation(observation: List[Float])
@@ -103,25 +68,13 @@ object GymSpace1 {
     implicit val observationFormat = jsonFormat1(Observation.apply)
   }
 
-  case class ObservationSpace(space:BoxSpace)
-  object ObservationSpace
-
-
-  case class GymInstance(instance_id: String)
-
-  object GymInstance extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val gymInstanceFormat = jsonFormat1(GymInstance.apply)
+  case class ObservationSpace (info:BoxSpace)
+  object  ObservationSpace extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val observationSpaceFormat = jsonFormat1(ObservationSpace.apply)
   }
-
-  case class GymAllEnvs(all_envs: Map[String, String])
-
-  object GymAllEnvs extends DefaultJsonProtocol with SprayJsonSupport {
-    implicit val gymAllEnvsFormat = jsonFormat1(GymAllEnvs.apply)
-  }
-
   case class StepReply(observation: Observation, reward: Float, done: Boolean, info: Map[String, String])
 
-  object GymStepInfo extends DefaultJsonProtocol with SprayJsonSupport {
+  object StepReply extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val gymStepFormat = jsonFormat4(StepReply.apply)
   }
 }
