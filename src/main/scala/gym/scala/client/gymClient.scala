@@ -23,11 +23,11 @@ package gym.scala.client
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpEntity, _}
-
-import scala.concurrent.duration._
+import akka.http.scaladsl.unmarshalling._
 import akka.stream.ActorMaterializer
 import gym.scala.client.GymSpace._
-import akka.http.scaladsl.unmarshalling._
+
+import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
 
 
@@ -86,36 +86,36 @@ object gymClient {
     println(s"envs=$instance")
     instance
   }
-  implicit def execute(command:resetEnv):GymObservation = {
+  implicit def execute(command:resetEnv):Observation = {
     println("resetEnv")
     val resp = reqResp(command)
     println(s"resp=$resp")
-    val gymObservation:GymObservation = resp match {
-      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymObservation], _timeout.second)
+    val Observation:Observation = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[Observation], _timeout.second)
     }
-    println(s"gymObservation=${gymObservation.observation}")
-    gymObservation
+    println(s"gymObservation=${Observation.observation}")
+    Observation
   }
-  implicit def execute(command:actionSpace):GymActionInfo = {
+  implicit def execute(command:actionSpace):ActionSpace = {
     println("action_space")
     val resp = reqResp(command)
     println(s"resp=$resp")
-    val gymInfo:GymActionInfo = resp match {
-      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymActionInfo], _timeout.second)
+    val actionSpace:ActionSpace = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ActionSpace], _timeout.second)
     }
-    println(s"gymInfo=${gymInfo}")
-    gymInfo
+    println(s"actionSpace=${actionSpace}")
+    actionSpace
   }
 
-  implicit def execute(command:obsSpace):GymObsInfo = {
+  implicit def execute(command:obsSpace):ObservationSpace = {
     println("observation_space")
     val resp = reqResp(command)
     println(s"resp=$resp")
-    val gymInfo:GymObsInfo = resp match {
-      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymObsInfo], _timeout.second)
+    val observationSpace:ObservationSpace = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ObservationSpace], _timeout.second)
     }
-    println(s"gymInfo=${gymInfo}")
-    gymInfo
+    println(s"observationSpace=${observationSpace}")
+    observationSpace
   }
   implicit def execute(command:monitorStart):Unit = {
     println("monitor start")
@@ -132,14 +132,14 @@ object gymClient {
     val resp = reqResp(command)
     println(s"resp=$resp")
   }
-  implicit def execute(command:step):GymStepInfo = {
+  implicit def execute(command:step):StepReply = {
     println("step")
     val resp = reqResp(command)
     println(s"resp=$resp")
-    val stepInfo:GymStepInfo = resp match {
-      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymStepInfo], _timeout.second)
+    val stepReply:StepReply = resp match {
+      case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[StepReply], _timeout.second)
     }
-    println(s"gymInfo=${stepInfo}")
-    stepInfo
+    println(s"gymInfo=${stepReply}")
+    stepReply
   }
 }
