@@ -21,6 +21,7 @@
 package gym.scala.client.test
 
 import gym.scala.client._
+
 /**
   * Created by Michael Wang on 05/01/2018.
   */
@@ -41,16 +42,18 @@ object gymClientTest extends App {
   val reset = resetEnv(gymInstance)
   val gymObs = gymClient.execute(reset)
 
-  val info = actionSpace(gymInstance)
-  val gymActionSpace = gymClient.execute(info)
+  val aSpace = actionSpace(gymInstance)
+  val gymActionSpace = gymClient.execute(aSpace)
 
   val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
-
-  val step0 = step(gymInstance)
-  val gymStepInfo = gymClient.execute(step0)
-
- val  monitorclose = monitorClose(gymInstance)
+  var done = false
+  for (i <- 1 to 100 if !done) {
+    val step0 = step(gymInstance, gymActionSpace.randomAction)
+    val gymStepInfo = gymClient.execute(step0)
+    done = gymStepInfo.done
+   }
+  val  monitorclose = monitorClose(gymInstance)
   gymClient.execute(monitorclose)
 
   val  shutDown = shutdown()

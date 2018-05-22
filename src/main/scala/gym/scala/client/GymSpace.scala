@@ -51,7 +51,9 @@ object GymSpace {
   object DiscreteSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val discreteSpaceFormat = jsonFormat2(DiscreteSpace.apply)
   }
-  case class ActionSpace(info: DiscreteSpace)
+  case class ActionSpace(info: DiscreteSpace) {
+    def randomAction:Int = info.randomAction
+  }
 
   object ActionSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val actionSpaceFormat = jsonFormat1(ActionSpace.apply)
