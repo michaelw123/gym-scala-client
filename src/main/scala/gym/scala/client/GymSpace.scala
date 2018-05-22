@@ -98,7 +98,7 @@ object GymSpace1 {
     implicit val boxSpaceFormat = jsonFormat4(BoxSpace.apply)
   }
 
-  class ActionSpace[S <: DiscreteSpace](space:S)  {
+  class ActionSpace(space:DiscreteSpace)  {
     def randomAction:Int = space.randomAction
   }
 
@@ -107,7 +107,7 @@ object GymSpace1 {
     implicit val observationFormat = jsonFormat1(Observation.apply)
   }
 
-  case class ObservationSpace[S <:BoxSpace](space:S)
+  case class ObservationSpace(space:BoxSpace)
   object ObservationSpace
 
 
