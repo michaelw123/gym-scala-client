@@ -18,3 +18,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % "10.1.1",
   "com.typesafe.akka" %% "akka-http-testkit" % "10.1.1" % Test
 )
+libraryDependencies  ++= Seq(
+  "org.scalanlp" %% "breeze" % "0.13.2"
+)
