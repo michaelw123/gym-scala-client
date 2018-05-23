@@ -43,7 +43,7 @@ object GymSpace {
 
   trait Space
   case class DiscreteSpace(name: String, n: Int) extends Space{
-    def randomAction:Int = {
+    def sample:Int = {
       val r = scala.util.Random
       r.nextInt(n)
     }
@@ -52,7 +52,7 @@ object GymSpace {
     implicit val discreteSpaceFormat = jsonFormat2(DiscreteSpace.apply)
   }
   case class ActionSpace(info: DiscreteSpace) {
-    def randomAction:Int = info.randomAction
+    def sample:Int = info.sample
   }
 
   object ActionSpace extends DefaultJsonProtocol with SprayJsonSupport {

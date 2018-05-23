@@ -54,7 +54,7 @@ object gymClientTest extends App {
     var steps = 0
     while( !done) {
       steps = steps +1
-      val step0 = step(gymInstance, gymActionSpace.randomAction)
+      val step0 = step(gymInstance, gymActionSpace.sample)
       val gymStepInfo = gymClient.execute(step0)
       println(gymStepInfo.observation)
       done = gymStepInfo.done
