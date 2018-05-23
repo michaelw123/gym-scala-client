@@ -47,12 +47,14 @@ object gymClientTest extends App {
 
   val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
+  println(s"high=${gymObsSpace.info.high}")
+  println(s"low=${gymObsSpace.info.low}")
   var done = false
-  for (i <- 1 to 100 if !done) {
+  //for (i <- 1 to 100 if !done) {
     val step0 = step(gymInstance, gymActionSpace.randomAction)
     val gymStepInfo = gymClient.execute(step0)
-    done = gymStepInfo.done
-   }
+ //   done = gymStepInfo.done
+ //  }
   val  monitorclose = monitorClose(gymInstance)
   gymClient.execute(monitorclose)
 
