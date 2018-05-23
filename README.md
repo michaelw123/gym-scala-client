@@ -5,6 +5,8 @@ A scala RESTful client for openai gym that allows Scala to have an access to ope
 gym http api specification:
 https://github.com/openai/gym-http-api/blob/master/README.md
 
+Following is a list of HTTP requests that this API supports:
+ 
 POST /v1/envs/
 
 GET /v1/envs/
