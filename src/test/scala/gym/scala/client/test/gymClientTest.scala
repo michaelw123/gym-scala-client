@@ -50,11 +50,18 @@ object gymClientTest extends App {
   println(s"high=${gymObsSpace.info.high}")
   println(s"low=${gymObsSpace.info.low}")
   var done = false
-  //for (i <- 1 to 100 if !done) {
-    val step0 = step(gymInstance, gymActionSpace.randomAction)
-    val gymStepInfo = gymClient.execute(step0)
- //   done = gymStepInfo.done
- //  }
+  for (episode <- 1 to 100) {
+    var steps = 0
+    for (steps <- 1 to 100 if !done) {
+      val step0 = step(gymInstance, gymActionSpace.randomAction)
+      val gymStepInfo = gymClient.execute(step0)
+      done = gymStepInfo.done
+    }
+    println(s"episode ${episode} complete in ${steps} steps")
+    val reset = resetEnv(gymInstance)
+    val gymObs = gymClient.execute(reset)
+    done = false
+   }
   val  monitorclose = monitorClose(gymInstance)
   gymClient.execute(monitorclose)
 
