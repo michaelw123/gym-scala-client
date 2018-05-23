@@ -62,12 +62,12 @@ object gymClient {
   def reqResp(command:GymApi):HttpResponse = {
     val uri = _host + ":" + _port + command.uri
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
-    println(s"http request: ${uri}, ${command.source}")
+    //println(s"http request: ${uri}, ${command.source}")
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     Await.result(responseFuture, _timeout.second)
   }
-  implicit def execute(command:listEnvs): GymAllEnvs = {
-    println("listEnvs")
+   def execute(command:listEnvs): GymAllEnvs = {
+    //println("listEnvs")
     val resp = reqResp(command)
     println(s"resp=$resp")
     val envs:GymAllEnvs = resp match {
@@ -76,7 +76,7 @@ object gymClient {
     println(s"envs=$envs")
     envs
   }
-  implicit def execute(command:createEnv):GymInstance = {
+   def execute(command:createEnv):GymInstance = {
     println("createEnv")
     val resp = reqResp(command)
     println(s"resp=$resp")
@@ -86,7 +86,7 @@ object gymClient {
     println(s"envs=$instance")
     instance
   }
-  implicit def execute(command:resetEnv):Observation = {
+   def execute(command:resetEnv):Observation = {
     println("resetEnv")
     val resp = reqResp(command)
     println(s"resp=$resp")
@@ -96,7 +96,7 @@ object gymClient {
     println(s"gymObservation=${Observation.observation}")
     Observation
   }
-  implicit def execute(command:actionSpace):ActionSpace = {
+   def execute(command:actionSpace):ActionSpace = {
     println("action_space")
     val resp = reqResp(command)
     println(s"resp=$resp")
@@ -133,13 +133,13 @@ object gymClient {
     println(s"resp=$resp")
   }
   implicit def execute(command:step):StepReply = {
-    println("step")
+    //println("step")
     val resp = reqResp(command)
-    println(s"resp=$resp")
+   // println(s"resp=$resp")
     val stepReply:StepReply = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[StepReply], _timeout.second)
     }
-    println(s"gymInfo=${stepReply}")
+    //println(s"gymInfo=${stepReply}")
     stepReply
   }
 }

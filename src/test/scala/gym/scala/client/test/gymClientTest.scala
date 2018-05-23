@@ -52,15 +52,18 @@ object gymClientTest extends App {
   var done = false
   for (episode <- 1 to 100) {
     var steps = 0
-    for (steps <- 1 to 100 if !done) {
+    while( !done) {
+      steps = steps +1
       val step0 = step(gymInstance, gymActionSpace.randomAction)
       val gymStepInfo = gymClient.execute(step0)
+      println(gymStepInfo.observation)
       done = gymStepInfo.done
     }
     println(s"episode ${episode} complete in ${steps} steps")
     val reset = resetEnv(gymInstance)
     val gymObs = gymClient.execute(reset)
     done = false
+    steps = 0
    }
   val  monitorclose = monitorClose(gymInstance)
   gymClient.execute(monitorclose)
