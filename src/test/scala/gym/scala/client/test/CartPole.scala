@@ -39,7 +39,14 @@ object CartPole extends App {
 
   val reset = resetEnv(gymInstance)
   val gymObs = gymClient.execute(reset)
-  //discretize
+  println(gymObs)
+  val newObs = gymObsSpace.discretize(gymObs)
+  println(newObs)
+
+  val  shutDown = shutdown()
+  gymClient.execute(shutDown)
+
+  gymClient.terminate
 
 
 }
