@@ -20,56 +20,26 @@
  */
 package gym.scala.client.test
 
-import gym.scala.client._
-
 /**
-  * Created by Michael Wang on 05/01/2018.
+  * Created by Michael Wang on 05/25/2018.
   */
-object gymClientTest extends App {
+import gym.scala.client._
+object CartPole extends App {
   gymClient.host("http://127.0.0.1")
     .port(5000)
     .timeout(20)
-  val listEnvs = new listEnvs
-  val envs = gymClient.execute(listEnvs)
-  println(s"client: $envs")
-
   val createEnv = new createEnv("CartPole-v0")
   val gymInstance = gymClient.execute(createEnv)
-
-  val monitorstart = monitorStart(gymInstance)
-  gymClient.execute(monitorstart)
-
-  val reset = resetEnv(gymInstance)
-  val gymObs = gymClient.execute(reset)
 
   val aSpace = actionSpace(gymInstance)
   val gymActionSpace = gymClient.execute(aSpace)
 
   val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
-  println(s"high=${gymObsSpace.info.high}")
-  println(s"low=${gymObsSpace.info.low}")
-  var done = false
-  for (episode <- 1 to 100) {
-    var steps = 0
-    while( !done) {
-      steps = steps +1
-      val step0 = step(gymInstance, gymActionSpace.sample)
-      val gymStepInfo = gymClient.execute(step0)
-      println(s"action:${step0.action}, observation:${gymStepInfo.observation}")
-      done = gymStepInfo.done
-    }
-    println(s"episode ${episode} complete in ${steps} steps")
-    val reset = resetEnv(gymInstance)
-    val gymObs = gymClient.execute(reset)
-    done = false
-    steps = 0
-   }
-  val  monitorclose = monitorClose(gymInstance)
-  gymClient.execute(monitorclose)
 
-  val  shutDown = shutdown()
-  gymClient.execute(shutDown)
+  val reset = resetEnv(gymInstance)
+  val gymObs = gymClient.execute(reset)
+  //discretize
 
-  gymClient.terminate
+
 }
