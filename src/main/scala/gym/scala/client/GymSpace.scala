@@ -41,12 +41,17 @@ object GymSpace {
     implicit val gymAllEnvsFormat = jsonFormat1(GymAllEnvs.apply)
   }
 
-  trait Space
-  case class DiscreteSpace(name: String, n: Int) extends Space{
+  trait Space[A] {
+    def sample:A
+    def contains(x:A):Boolean
+  }
+  case class DiscreteSpace(name: String, n: Int) extends Space[Int]{
     def sample:Int = {
       val r = scala.util.Random
       r.nextInt(n)
     }
+    def contains(x:Int):Boolean = x>0 && x<n
+
   }
   object DiscreteSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val discreteSpaceFormat = jsonFormat2(DiscreteSpace.apply)
@@ -58,7 +63,18 @@ object GymSpace {
   object ActionSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val actionSpaceFormat = jsonFormat1(ActionSpace.apply)
   }
-  case class BoxSpace(high: List[Double], low: List[Double], name: String, shape: List[Int])
+  case class BoxSpace(high: List[Double], low: List[Double], name: String, shape: List[Int]) extends Space[List[Double]] {
+    def sample:List[Double] = {
+      import breeze.stats.distributions._
+      List(Uniform(low(0), high(0)).draw,
+        Uniform(low(1), high(1)).draw,
+        Uniform(low(2), high(2)).draw,
+        Uniform(low(3), high(3)).draw)
+    }
+    def contains(x:List[Double]):Boolean = {
+      false
+    }
+  }
   object BoxSpace  extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val boxSpaceFormat = jsonFormat4(BoxSpace.apply)
   }
