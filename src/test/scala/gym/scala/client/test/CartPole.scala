@@ -24,6 +24,7 @@ package gym.scala.client.test
   * Created by Michael Wang on 05/25/2018.
   */
 import gym.scala.client._
+import gym.scala.client.GymSpace._
 object CartPole extends App {
   gymClient.host("http://127.0.0.1")
     .port(5000)
@@ -34,12 +35,13 @@ object CartPole extends App {
   val aSpace = actionSpace(gymInstance)
   val gymActionSpace = gymClient.execute(aSpace)
 
-  val obsspace = obsSpace(gymInstance)
+  implicit val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
 
   val reset = resetEnv(gymInstance)
   val gymObs = gymClient.execute(reset)
   println(gymObs)
+
   val newObs = gymObsSpace.discretize(gymObs)
   println(newObs)
 
@@ -48,5 +50,17 @@ object CartPole extends App {
 
   gymClient.terminate
 
-
+  class CartPoleObservation {
+    val x:Int = 0
+    val xDot:Int = 0
+    val theta:Int = 0
+    val thetaDot:Int = 0
+  }
+  implicit def gymObs2Observation(gymObs:Observation)(implicit gybObsSpace:ObservationSpace):CartPoleObservation = {
+    val obs = new CartPoleObservation
+    //discretize here
+    obs
+  }
 }
+
+
