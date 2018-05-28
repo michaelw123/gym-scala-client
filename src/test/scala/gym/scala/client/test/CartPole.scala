@@ -26,6 +26,7 @@ package gym.scala.client.test
 import gym.scala.client._
 import gym.scala.client.GymSpace._
 object CartPole extends App {
+  val buckets=(1, 1, 6, 12)
   gymClient.host("http://127.0.0.1")
     .port(5000)
     .timeout(20)
@@ -43,7 +44,7 @@ object CartPole extends App {
   println(gymObs)
 
   val newObs = gymObsSpace.discretize(gymObs)
-  println(newObs)
+  printit(newObs)
 
 //save policy - ticktacktoe
 
@@ -52,7 +53,19 @@ object CartPole extends App {
 
   gymClient.terminate
 
-  case class CartPoleObservation(x:Int, xDot:Int, theta:Int, thetaDot:Int)
+  case class CartPoleObservation(x:Int, xDot:Int, theta:Int, thetaDot:Int) { //assume buckets and scripts are 1-based
+    def indice = x * buckets._1 * xDot * buckets._2 * theta * buckets._3 * buckets._4 +thetaDot
+    def apply(indice:Int) = {
+      val thetaDot = indice % buckets._4
+      val tmp1 = (indice-thetaDot)/buckets._4
+      val theta = tmp1%buckets._3
+      val tmp2 = (tmp1-theta)/buckets._3
+      val xDot = tmp2%buckets._2
+      val tmp3 = (tmp2 - xDot)/buckets._2
+      val x = tmp3/buckets._1
+      new CartPoleObservation(x, xDot, theta, thetaDot)
+    }
+  }
   implicit def gymObs2Observation(gymObs:Observation):CartPoleObservation = {
         new CartPoleObservation(gymObs.observation(0).toInt,
           gymObs.observation(1).toInt,
@@ -60,7 +73,9 @@ object CartPole extends App {
           gymObs.observation(3).toInt)
   }
 
-  def printit(x:CartPoleObservation) = println(x)
+  def printit(x:CartPoleObservation ) = {
+    println(s"${x}, indice = ${x.indice}")
+  }
 }
 
 
