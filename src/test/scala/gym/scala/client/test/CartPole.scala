@@ -45,7 +45,7 @@ object CartPole extends App {
   val newObs = gymObsSpace.discretize(gymObs)
   println(newObs)
 
-
+//save policy - ticktacktoe
 
   val  shutDown = shutdown()
   gymClient.execute(shutDown)
