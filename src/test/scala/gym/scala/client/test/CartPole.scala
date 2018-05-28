@@ -43,7 +43,7 @@ object CartPole extends App {
   val gymObs = gymClient.execute(reset)
   println(gymObs)
 
-  val newObs = gymObsSpace.discretize(gymObs)
+  val newObs = gymObsSpace.discretize(gymObs, buckets)
   printit(newObs)
   val y:Int = newObs.indice
   val z = CartPoleObservation(y)
