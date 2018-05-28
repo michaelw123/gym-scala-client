@@ -45,22 +45,30 @@ object CartPole extends App {
   val newObs = gymObsSpace.discretize(gymObs)
   println(newObs)
 
+ // val newObs1:CartPoleObservation = gymObs
+  printit(newObs)
+
   val  shutDown = shutdown()
   gymClient.execute(shutDown)
 
   gymClient.terminate
 
-  class CartPoleObservation {
-    val x:Int = 0
-    val xDot:Int = 0
-    val theta:Int = 0
-    val thetaDot:Int = 0
+  case class CartPoleObservation(x:Int, xDot:Int, theta:Int, thetaDot:Int)
+  implicit def gymObs2Observation(gymObs:Observation):CartPoleObservation = {
+        new CartPoleObservation(gymObs.observation(0).toInt,
+          gymObs.observation(1).toInt,
+          gymObs.observation(2).toInt,
+          gymObs.observation(3).toInt)
   }
-  implicit def gymObs2Observation(gymObs:Observation)(implicit gybObsSpace:ObservationSpace):CartPoleObservation = {
-    val obs = new CartPoleObservation
-    //discretize here
-    obs
-  }
+//  implicit def gymObs2Observation(gymObs:Observation)(implicit gybObsSpace:ObservationSpace):CartPoleObservation = {
+//    val obs = gybObsSpace.discretize(gymObs)
+//    new CartPoleObservation(obs.observation(0).toInt,
+//      obs.observation(1).toInt,
+//      obs.observation(2).toInt,
+//      obs.observation(3).toInt)
+//  }
+
+  def printit(x:CartPoleObservation) = println(x)
 }
 
 
