@@ -87,13 +87,13 @@ object gymClient {
     instance
   }
    def execute(command:resetEnv):Observation = {
-    println("resetEnv")
+   // println("resetEnv")
     val resp = reqResp(command)
-    println(s"resp=$resp")
+  //  println(s"resp=$resp")
     val Observation:Observation = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[Observation], _timeout.second)
     }
-    println(s"gymObservation=${Observation.observation}")
+  //  println(s"gymObservation=${Observation.observation}")
     Observation
   }
    def execute(command:actionSpace):ActionSpace = {
@@ -135,7 +135,7 @@ object gymClient {
   implicit def execute(command:step):StepReply = {
     //println("step")
     val resp = reqResp(command)
-   // println(s"resp=$resp")
+    //println(s"resp=$resp")
     val stepReply:StepReply = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[StepReply], _timeout.second)
     }
