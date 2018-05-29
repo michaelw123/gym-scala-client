@@ -23,9 +23,9 @@ package gym.scala.client.test
 /**
   * Created by Michael Wang on 05/25/2018.
   */
-import breeze.linalg.DenseMatrix
+import breeze.linalg._
+import gym.scala.client.GymSpace.Observation
 import gym.scala.client._
-import gym.scala.client.GymSpace.{StepReply, _}
 object CartPole extends App {
   val buckets = (1, 1, 6, 12)
   gymClient.host("http://127.0.0.1")
@@ -45,22 +45,25 @@ object CartPole extends App {
   val reset = resetEnv(gymInstance)
   val gymObs = gymClient.execute(reset)
   println(gymObs)
-  val newObs = gymObsSpace.discretize(gymObs, buckets)
-  gymActionSpace.sample
-  printit(newObs)
-  for (j <- 1 to 100) {
-  for (i <- 1 to 100) {
-    val step1 = step(gymInstance, gymActionSpace.sample)
-    val stepReply = gymClient.execute(step1)
-    val obs =  gymObsSpace.discretize(Observation(stepReply.observation), buckets)
-    println(obs)
-  }
-    val gymObs = gymClient.execute(reset)
-}
+  var origObs = gymObsSpace.discretize(gymObs, buckets)
 
-  val y:Int = newObs.indice
-  val z = CartPoleObservation(y)
-  println(z)
+  var indice=0
+  var done = false
+  for (j <- 1 to 100) {
+    var done = false
+    for (i <- 1 to 200 if !done) {
+      val action = if (scala.math.random <= 0.9) gymActionSpace.sample else thePolicy.maxAction(indice)
+      val step1 = step(gymInstance, action)
+      val stepReply = gymClient.execute(step1)
+      done = stepReply.done
+      val obs =  gymObsSpace.discretize(Observation(stepReply.observation), buckets)
+      indice = obs.indice
+      thePolicy.update(origObs.indice, obs.indice, action, stepReply.reward)
+      origObs  = obs
+    }
+    val gymObs = gymClient.execute(reset)
+    //thePolicy.reset
+  }
 
   //save policy - ticktacktoe
 
@@ -96,11 +99,14 @@ object CartPole extends App {
     val learning_rate = 0.9
     val explore_rate = 0.1
     val discount = 0.5
-    var q:Array[Array[Double]] = Array.fill[Double] (indices, actions)(0)
-    def chooseAction(indice:Int):Int  = if (scala.math.random <= explore_rate) sample else q(indice).argmax
+    //var q = Array.fill[Double] (indices, actions)(0)
+    var q = DenseMatrix.zeros[Double](indices, actions)
+    //def chooseAction(indice:Int):Int  = if (scala.math.random <= explore_rate) sample else q(indice).argmax
     def update(old_indice:Int, new_indice:Int, action:Int, reward:Int):Unit = {
-      q(old_indice)(action) = q(old_indice)(action) + learning_rate * (reward + discount * q(new_indice).max - q(old_indice)(action))
+      q(old_indice, action) = q(old_indice,action) + learning_rate * (reward + discount * argmax(q(new_indice, ::)) - q(old_indice, action))
     }
+    def reset = q = DenseMatrix.zeros[Double](indices, actions)
+    def maxAction(indice:Int) = argmax(q(indice,::))
 
   }
   def printit(x:CartPoleObservation ) = {

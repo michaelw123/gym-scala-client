@@ -106,7 +106,7 @@ object GymSpace {
   object  ObservationSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val observationSpaceFormat = jsonFormat1(ObservationSpace.apply)
   }
-  case class StepReply(observation: List[Float], reward: Float, done: Boolean, info: Map[String, String])
+  case class StepReply(observation: List[Float], reward: Int, done: Boolean, info: Map[String, String])
 
   object StepReply extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val gymStepFormat = jsonFormat4(StepReply.apply)
