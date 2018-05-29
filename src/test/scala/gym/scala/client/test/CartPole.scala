@@ -27,7 +27,7 @@ import breeze.linalg._
 import gym.scala.client.GymSpace.Observation
 import gym.scala.client._
 object CartPole extends App {
-  val buckets = (1, 1, 6, 3)
+  val buckets = (1, 1, 6, 12)
   gymClient.host("http://127.0.0.1")
     .port(5000)
     .timeout(20)
@@ -49,7 +49,7 @@ object CartPole extends App {
 
   var indice=0
   var done = false
-  for (j <- 1 to 1000) {
+  for (j <- 1 to 300) {
     var done = false
     var count = 0
     for (i <- 1 to 200 if !done) {
@@ -103,9 +103,9 @@ println(thePolicy.q)
           gymObs.observation(3).toInt)
   }
   case class cartPolePolicy ( indices:Int, actions:Int) {
-    val learning_rate = 0.1
+    val learning_rate = 0.3
     val explore_rate = 0.1
-    val discount = 0.99
+    val discount = 0.9
     //var q = Array.fill[Double] (indices, actions)(0)
     var q = DenseMatrix.zeros[Double](indices, actions)
     //def chooseAction(indice:Int):Int  = if (scala.math.random <= explore_rate) sample else q(indice).argmax
