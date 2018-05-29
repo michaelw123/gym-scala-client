@@ -87,7 +87,7 @@ object GymSpace {
   case class ObservationSpace (info:BoxSpace){
     def discretize(obs:Observation, buckets:(Int, Int, Int, Int)): Observation  = {
       val upperBound = (info.high(0), 0.5, info.high(2), scala.math.toRadians(50.0))
-      val lowerbound = (info.low(0), 0.5, info.low(2), scala.math.toRadians(50.0))
+      val lowerbound = (info.low(0), -0.5, info.low(2), scala.math.toRadians(-50.0))
       val ratios = ((obs.observation(0) + scala.math.abs(lowerbound._1)) / (upperBound._1 - lowerbound._1),
           (obs.observation(1) + scala.math.abs(lowerbound._2)) / (upperBound._2 - lowerbound._2),
           (obs.observation(2) + scala.math.abs(lowerbound._3)) / (upperBound._3 - lowerbound._3),
