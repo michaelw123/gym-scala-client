@@ -56,11 +56,6 @@ object CartPole extends App {
       val step1 = step(gymInstance, action)
       val stepReply = gymClient.execute(step1)
       done = stepReply.done
-      if (done) {
-        reward = -100
-      } else {
-        reward = stepReply.reward
-      }
       val next_obs =  gymObsSpace.discretize(Observation(stepReply.observation), buckets)
       //indice = obs.indice
       thePolicy.update(origObs.indice, next_obs.indice, action, reward)
@@ -107,22 +102,31 @@ object CartPole extends App {
           gymObs.observation(3).toInt)
   }
   case class cartPolePolicy ( indices:Int, actions:Int) {
-    val learning_rate = 0.1
-    val explore_rate = 0.01
+    //val learning_rate = 0.5
+    //val explore_rate = 0.01
     val discount = 0.99
+    var episode = 0
     //var q = Array.fill[Double] (indices, actions)(0)
     var q = DenseMatrix.zeros[Double](indices, actions)
     //def chooseAction(indice:Int):Int  = if (scala.math.random <= explore_rate) sample else q(indice).argmax
     def update(old_indice:Int, new_indice:Int, action:Int, reward:Int):Unit = {
-      q(old_indice, action) = q(old_indice,action) + learning_rate * (reward + discount * argmax(q(new_indice, ::)) - q(old_indice, action))
+     // println(s"old q value=${q(old_indice, action)}, old_indice=${old_indice}, learning rate = ${learning_rate}, next q value = ${argmax(q(new_indice, ::))}")
+      q(old_indice, action) = q(old_indice,action) + learning_rate * (reward + discount * max(q(new_indice, ::)) - q(old_indice, action))
+     // println(s"new q value=${q(old_indice, action)}")
       //println(q(old_indice, action))
       //q_table[state_0 + (action,)] += learning_rate*(reward + discount_factor*(best_q) - q_table[state_0 + (action,)])
     }
     def reset = q = DenseMatrix.zeros[Double](indices, actions)
     def maxAction(indice:Int) = {
+      episode = episode +1
       if (scala.math.random <= learning_rate || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
     }
-
+    def explore_rate = {
+       scala.math.max(0.01, scala.math.min(1, 1.0 - scala.math.log10((episode +1 )/25)))
+    }
+    def learning_rate = {
+      scala.math.max(0.1, scala.math.min(0.5, 1.0 - scala.math.log10((episode + 1) / 25)))
+    }
   }
   def printit(x:CartPoleObservation ) = {
     println(x)
