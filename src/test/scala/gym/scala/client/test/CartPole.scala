@@ -47,31 +47,34 @@ object CartPole extends App {
   println(gymObs)
   var origObs = gymObsSpace.discretize(gymObs, buckets)
 
-  var indice=0
-  var done = false
-  for (j <- 1 to 300) {
+  for (j <- 1 to 500) {
     var done = false
     var count = 0
     for (i <- 1 to 200 if !done) {
       var reward = 1
-      val action = if (scala.math.random <= 0.5) gymActionSpace.sample else thePolicy.maxAction(indice)
+      val action = thePolicy.maxAction(origObs.indice)
       val step1 = step(gymInstance, action)
       val stepReply = gymClient.execute(step1)
       done = stepReply.done
       if (done) {
         reward = -100
+      } else {
+        reward = stepReply.reward
       }
-      val obs =  gymObsSpace.discretize(Observation(stepReply.observation), buckets)
+      val next_obs =  gymObsSpace.discretize(Observation(stepReply.observation), buckets)
       //indice = obs.indice
-      thePolicy.update(origObs.indice, obs.indice, action, reward)
-      origObs  = obs
+      thePolicy.update(origObs.indice, next_obs.indice, action, reward)
+      if (done) {
+        println(s"action: ${action}, origObs=${origObs}, obs=${stepReply.observation}, nextObs=${next_obs}")
+      }
+      origObs  = next_obs
       count = i
     }
     println(s"steps before fail: ${count}")
     origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
     //thePolicy.reset
   }
-println(thePolicy.q)
+  println(thePolicy.q)
   //save policy - ticktacktoe
 
   val shutDown = shutdown()
@@ -97,6 +100,7 @@ println(thePolicy.q)
     }
   }
   implicit def gymObs2Observation(gymObs:Observation):CartPoleObservation = {
+    val x = gymObs.observation(0).toInt
         new CartPoleObservation(gymObs.observation(0).toInt,
           gymObs.observation(1).toInt,
           gymObs.observation(2).toInt,
@@ -111,12 +115,13 @@ println(thePolicy.q)
     //def chooseAction(indice:Int):Int  = if (scala.math.random <= explore_rate) sample else q(indice).argmax
     def update(old_indice:Int, new_indice:Int, action:Int, reward:Int):Unit = {
       q(old_indice, action) = q(old_indice,action) + learning_rate * (reward + discount * argmax(q(new_indice, ::)) - q(old_indice, action))
-
+      println(q(old_indice, action))
       //q_table[state_0 + (action,)] += learning_rate*(reward + discount_factor*(best_q) - q_table[state_0 + (action,)])
-
     }
     def reset = q = DenseMatrix.zeros[Double](indices, actions)
-    def maxAction(indice:Int) = argmax(q(indice,::))
+    def maxAction(indice:Int) = {
+      if (scala.math.random <= 0.2 || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
+    }
 
   }
   def printit(x:CartPoleObservation ) = {
