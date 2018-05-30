@@ -27,7 +27,7 @@ import breeze.linalg._
 import gym.scala.client.GymSpace.Observation
 import gym.scala.client._
 object CartPole extends App {
-  val buckets = (1, 1, 6, 12)
+  val buckets = (1, 1, 6, 3)
   gymClient.host("http://127.0.0.1")
     .port(5000)
     .timeout(20)
@@ -50,7 +50,7 @@ object CartPole extends App {
   for (j <- 1 to 500) {
     var done = false
     var count = 0
-    for (i <- 1 to 200 if !done) {
+    for (i <- 1 to 210 if !done) {
       var reward = 1
       val action = thePolicy.maxAction(origObs.indice)
       val step1 = step(gymInstance, action)
@@ -107,20 +107,20 @@ object CartPole extends App {
           gymObs.observation(3).toInt)
   }
   case class cartPolePolicy ( indices:Int, actions:Int) {
-    val learning_rate = 0.3
-    val explore_rate = 0.1
-    val discount = 0.9
+    val learning_rate = 0.1
+    val explore_rate = 0.01
+    val discount = 0.99
     //var q = Array.fill[Double] (indices, actions)(0)
     var q = DenseMatrix.zeros[Double](indices, actions)
     //def chooseAction(indice:Int):Int  = if (scala.math.random <= explore_rate) sample else q(indice).argmax
     def update(old_indice:Int, new_indice:Int, action:Int, reward:Int):Unit = {
       q(old_indice, action) = q(old_indice,action) + learning_rate * (reward + discount * argmax(q(new_indice, ::)) - q(old_indice, action))
-      println(q(old_indice, action))
+      //println(q(old_indice, action))
       //q_table[state_0 + (action,)] += learning_rate*(reward + discount_factor*(best_q) - q_table[state_0 + (action,)])
     }
     def reset = q = DenseMatrix.zeros[Double](indices, actions)
     def maxAction(indice:Int) = {
-      if (scala.math.random <= 0.2 || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
+      if (scala.math.random <= learning_rate || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
     }
 
   }
