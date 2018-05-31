@@ -26,8 +26,12 @@ package gym.scala.client.test
 import breeze.linalg._
 import gym.scala.client.GymSpace.Observation
 import gym.scala.client._
+import java.io.{FileInputStream, FileOutputStream, ObjectInputStream, ObjectOutputStream}
+
 object CartPole extends App {
-  val buckets = (1, 1, 6, 6)
+
+
+  val buckets = (1, 1, 6, 3)
   gymClient.host("http://127.0.0.1")
     .port(5000)
     .timeout(20)
@@ -39,7 +43,9 @@ object CartPole extends App {
 
   implicit val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
+  train
 
+  def train = {
   val thePolicy = cartPolePolicy(buckets._1 * buckets._2 * buckets._3 * buckets._4, gymActionSpace.info.n)
   println(thePolicy)
   val reset = resetEnv(gymInstance)
@@ -56,30 +62,32 @@ object CartPole extends App {
       val step1 = step(gymInstance, action)
       val stepReply = gymClient.execute(step1)
       done = stepReply.done
-      val next_obs =  gymObsSpace.discretize(Observation(stepReply.observation), buckets)
+      val next_obs = gymObsSpace.discretize(Observation(stepReply.observation), buckets)
       //indice = obs.indice
       thePolicy.update(origObs.indice, next_obs.indice, action, stepReply.reward)
-//      if (done) {
-//        println(s"action: ${action}, origObs=${origObs}, obs=${stepReply.observation}, nextObs=${next_obs}")
-//      }
-//      println(s"episode=${episode}")
-//      println(s"t=${t}")
-//      println(s"action=${action}")
-//      println(s"state=${next_obs}")
-//      println(s"reward=${stepReply.reward}")
-//      println(s"best Q=${max(thePolicy.q(next_obs.indice, ::))}")
-//      println(s"Explore rate=${thePolicy.explore_rate}")
-//      println(s"Learning rate=${thePolicy.learning_rate}")
-//      println
-      origObs  = next_obs
+      //      if (done) {
+      //        println(s"action: ${action}, origObs=${origObs}, obs=${stepReply.observation}, nextObs=${next_obs}")
+      //      }
+      //      println(s"episode=${episode}")
+      //      println(s"t=${t}")
+      //      println(s"action=${action}")
+      //      println(s"state=${next_obs}")
+      //      println(s"reward=${stepReply.reward}")
+      //      println(s"best Q=${max(thePolicy.q(next_obs.indice, ::))}")
+      //      println(s"Explore rate=${thePolicy.explore_rate}")
+      //      println(s"Learning rate=${thePolicy.learning_rate}")
+      //      println
+      origObs = next_obs
       if (done) {
         println(s"reward of episode ${episode} =${t}")
       }
     }
-    //thePolicy.reset
   }
-  println(thePolicy.q)
-  //save policy - ticktacktoe
+    thePolicy save "c://work/tmp/cartpole"
+
+  }
+ // println(thePolicy.q)
+  //save policy
 
   val shutDown = shutdown()
   gymClient.execute(shutDown)
@@ -137,6 +145,16 @@ object CartPole extends App {
     }
     def learning_rate = {
       scala.math.max(0.1, scala.math.min(0.5, 1.0 - scala.math.log10((episode + 1) / 25)))
+    }
+    def save(file:String) = {
+      val oos = new ObjectOutputStream(new FileOutputStream(file))
+      oos.writeObject(q)
+      oos.close
+    }
+    def load(file:String)= {
+      val ois = new ObjectInputStream(new FileInputStream(file))
+      q = ois.readObject.asInstanceOf[DenseMatrix[Double]]
+      ois.close
     }
   }
   def printit(x:CartPoleObservation ) = {
