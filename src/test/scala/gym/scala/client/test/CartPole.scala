@@ -27,7 +27,7 @@ import breeze.linalg._
 import gym.scala.client.GymSpace.Observation
 import gym.scala.client._
 object CartPole extends App {
-  val buckets = (1, 1, 6, 3)
+  val buckets = (1, 1, 6, 6)
   gymClient.host("http://127.0.0.1")
     .port(5000)
     .timeout(20)
@@ -47,26 +47,35 @@ object CartPole extends App {
   println(gymObs)
   var origObs = gymObsSpace.discretize(gymObs, buckets)
 
-  for (j <- 1 to 500) {
+  for (episode <- 1 to 500) {
     var done = false
-    var count = 0
-    for (i <- 1 to 210 if !done) {
-      var reward = 1
+    thePolicy.setEpisode(episode)
+    origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
+    for (t <- 1 to 210 if !done) {
       val action = thePolicy.maxAction(origObs.indice)
       val step1 = step(gymInstance, action)
       val stepReply = gymClient.execute(step1)
       done = stepReply.done
       val next_obs =  gymObsSpace.discretize(Observation(stepReply.observation), buckets)
       //indice = obs.indice
-      thePolicy.update(origObs.indice, next_obs.indice, action, reward)
-      if (done) {
-        println(s"action: ${action}, origObs=${origObs}, obs=${stepReply.observation}, nextObs=${next_obs}")
-      }
+      thePolicy.update(origObs.indice, next_obs.indice, action, stepReply.reward)
+//      if (done) {
+//        println(s"action: ${action}, origObs=${origObs}, obs=${stepReply.observation}, nextObs=${next_obs}")
+//      }
+//      println(s"episode=${episode}")
+//      println(s"t=${t}")
+//      println(s"action=${action}")
+//      println(s"state=${next_obs}")
+//      println(s"reward=${stepReply.reward}")
+//      println(s"best Q=${max(thePolicy.q(next_obs.indice, ::))}")
+//      println(s"Explore rate=${thePolicy.explore_rate}")
+//      println(s"Learning rate=${thePolicy.learning_rate}")
+//      println
       origObs  = next_obs
-      count = i
+      if (done) {
+        println(s"reward of episode ${episode} =${t}")
+      }
     }
-    println(s"steps before fail: ${count}")
-    origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
     //thePolicy.reset
   }
   println(thePolicy.q)
@@ -106,19 +115,21 @@ object CartPole extends App {
     //val explore_rate = 0.01
     val discount = 0.99
     var episode = 0
+    def setEpisode(epi:Int) = {
+      episode = epi
+    }
     //var q = Array.fill[Double] (indices, actions)(0)
     var q = DenseMatrix.zeros[Double](indices, actions)
     //def chooseAction(indice:Int):Int  = if (scala.math.random <= explore_rate) sample else q(indice).argmax
     def update(old_indice:Int, new_indice:Int, action:Int, reward:Int):Unit = {
-     // println(s"old q value=${q(old_indice, action)}, old_indice=${old_indice}, learning rate = ${learning_rate}, next q value = ${argmax(q(new_indice, ::))}")
+     //println(s"old q value=${q(old_indice, action)}, old_indice=${old_indice}, learning rate = ${learning_rate}, next q value = ${argmax(q(new_indice, ::))}")
       q(old_indice, action) = q(old_indice,action) + learning_rate * (reward + discount * max(q(new_indice, ::)) - q(old_indice, action))
-     // println(s"new q value=${q(old_indice, action)}")
+     //println(s"new q value=${q(old_indice, action)}")
       //println(q(old_indice, action))
       //q_table[state_0 + (action,)] += learning_rate*(reward + discount_factor*(best_q) - q_table[state_0 + (action,)])
     }
     def reset = q = DenseMatrix.zeros[Double](indices, actions)
     def maxAction(indice:Int) = {
-      episode = episode +1
       if (scala.math.random <= learning_rate || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
     }
     def explore_rate = {
