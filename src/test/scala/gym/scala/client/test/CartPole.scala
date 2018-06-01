@@ -149,22 +149,14 @@ object CartPole extends App {
           gymObs.observation(3).toInt)
   }
   case class cartPolePolicy ( indices:Int, actions:Int) {
-    //val learning_rate = 0.5
-    //val explore_rate = 0.01
     val discount = 0.99
     var episode = 0
     def setEpisode(epi:Int) = {
       episode = epi
     }
-    //var q = Array.fill[Double] (indices, actions)(0)
     var q = DenseMatrix.zeros[Double](indices, actions)
-    //def chooseAction(indice:Int):Int  = if (scala.math.random <= explore_rate) sample else q(indice).argmax
     def update(old_indice:Int, new_indice:Int, action:Int, reward:Int):Unit = {
-     //println(s"old q value=${q(old_indice, action)}, old_indice=${old_indice}, learning rate = ${learning_rate}, next q value = ${argmax(q(new_indice, ::))}")
       q(old_indice, action) = q(old_indice,action) + learning_rate * (reward + discount * max(q(new_indice, ::)) - q(old_indice, action))
-     //println(s"new q value=${q(old_indice, action)}")
-      //println(q(old_indice, action))
-      //q_table[state_0 + (action,)] += learning_rate*(reward + discount_factor*(best_q) - q_table[state_0 + (action,)])
     }
     def reset = q = DenseMatrix.zeros[Double](indices, actions)
     def maxAction(indice:Int) = {
