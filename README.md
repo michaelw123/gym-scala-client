@@ -27,5 +27,7 @@ POST /v1/upload/
 
 POST /v1/shutdown/
 
-CartPole has been implemented in Scala using gym-sclala-client. Contributions of other gym environment implementation are welcome to utilize this library.
+CartPole has been implemented in Scala using gym-scala-client. Contributions of other gym environment implementation are welcome.
+
+Please cite this project if it is useful to your scala implementation.
 
