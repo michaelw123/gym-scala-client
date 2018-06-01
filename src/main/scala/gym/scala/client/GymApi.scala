@@ -28,11 +28,11 @@ sealed trait GymApi {
   val envRoot = "/v1/envs/"
   val method = HttpMethods.POST
   val gymInstance:GymInstance = GymInstance.apply("")
-  val source:String = """{}"""
+  val json:String = """{}"""
   val uri=envRoot
 }
 case class createEnv( val envId:String) extends GymApi {
-  override val source = s"""{ "env_id": "${envId}" }"""
+  override val json = s"""{ "env_id": "${envId}" }"""
 }
 case class listEnvs(override val gymInstance:GymInstance = GymInstance.apply("")) extends GymApi{
   override val method = HttpMethods.GET
@@ -41,7 +41,7 @@ case class resetEnv(override val gymInstance:GymInstance) extends GymApi{
   override val uri=s"${envRoot}${gymInstance.instance_id}/reset/"
 }
 case class step(override val gymInstance:GymInstance, action:Int) extends GymApi {
-  override val source = s"""{ "action": ${action}, "render": true }"""
+  override val json = s"""{ "action": ${action}, "render": true }"""
   override val uri=s"${envRoot}${gymInstance.instance_id}/step/"
 }
 
@@ -54,7 +54,7 @@ case class obsSpace(override val gymInstance:GymInstance) extends GymApi{
   override val uri=s"${envRoot}${gymInstance.instance_id}/observation_space/"
 }
 case class monitorStart(override val gymInstance:GymInstance) extends GymApi{
-  override val source = s"""{ "resume": false, "directory": "/openai/tmp", "force": true }"""
+  override val json = s"""{ "resume": false, "directory": "/openai/tmp", "force": true }"""
   override val uri=s"${envRoot}${gymInstance.instance_id}/monitor/start/"
 }
 case class monitorClose(override val gymInstance:GymInstance) extends GymApi{
