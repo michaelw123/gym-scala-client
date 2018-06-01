@@ -27,7 +27,7 @@ POST /v1/upload/
 
 POST /v1/shutdown/
 
-CartPole has been implemented in Scala using gym-scala-client. Contributions of other gym environment implementation are welcome.
+A solution of CartPole has been implemented in Scala using Q-learning through gym-scala-client. Contributions of solution to other gym environments are welcome.
 
 Please cite gym-scala-client if it helps your Scala AI project!
 
