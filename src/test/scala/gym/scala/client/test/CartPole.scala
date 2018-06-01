@@ -70,6 +70,7 @@ object CartPole extends App {
         }
       }
     }
+    thePolicy save "c://work/tmp/cartpole"
     val shutDown = shutdown()
     gymClient.execute(shutDown)
 
