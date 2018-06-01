@@ -43,8 +43,38 @@ object CartPole extends App {
 
   implicit val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
-  train
+  //train
+  run
 
+  def run = {
+    val thePolicy = cartPolePolicy(buckets._1 * buckets._2 * buckets._3 * buckets._4, gymActionSpace.info.n)
+    thePolicy load "c://work/tmp/cartpole"
+    println(thePolicy.q)
+    val reset = resetEnv(gymInstance)
+    var gymObs = gymClient.execute(reset)
+    var origObs = gymObsSpace.discretize(gymObs, buckets)
+    for (episode <- 500 to 600) {
+      var done = false
+      thePolicy.setEpisode(episode)
+      origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
+      for (t <- 1 to 210 if !done) {
+        val action = thePolicy.maxAction(origObs.indice)
+        val step1 = step(gymInstance, action)
+        val stepReply = gymClient.execute(step1)
+        done = stepReply.done
+        val next_obs = gymObsSpace.discretize(Observation(stepReply.observation), buckets)
+        thePolicy.update(origObs.indice, next_obs.indice, action, stepReply.reward)
+        origObs = next_obs
+        if (done) {
+          println(s"reward of episode ${episode} =${t}")
+        }
+      }
+    }
+    val shutDown = shutdown()
+    gymClient.execute(shutDown)
+
+    gymClient.terminate
+  }
   def train = {
   val thePolicy = cartPolePolicy(buckets._1 * buckets._2 * buckets._3 * buckets._4, gymActionSpace.info.n)
   println(thePolicy)
@@ -84,15 +114,14 @@ object CartPole extends App {
     }
   }
     thePolicy save "c://work/tmp/cartpole"
+    val shutDown = shutdown()
+    gymClient.execute(shutDown)
+
+    gymClient.terminate
 
   }
  // println(thePolicy.q)
-  //save policy
 
-  val shutDown = shutdown()
-  gymClient.execute(shutDown)
-
-  gymClient.terminate
 
   case class CartPoleObservation(x: Int, xDot: Int, theta: Int, thetaDot: Int) {
      //assume buckets and scripts are 1-based

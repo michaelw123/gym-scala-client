@@ -1,7 +1,3 @@
-package gym.scala.client
-
-import akka.http.scaladsl.model.{ContentTypes, HttpMethods}
-import gym.scala.client.GymSpace._
 /*
  * Copyright (c) 2017 Michael Wang
  *
@@ -22,6 +18,11 @@ import gym.scala.client.GymSpace._
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package gym.scala.client
+
+import akka.http.scaladsl.model.{ContentTypes, HttpMethods}
+import gym.scala.client.GymSpace._
+
 sealed trait GymApi {
   val contentType = ContentTypes.`application/json`
   val envRoot = "/v1/envs/"
