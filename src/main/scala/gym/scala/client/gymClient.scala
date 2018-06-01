@@ -61,85 +61,57 @@ object gymClient {
   }
   def reqResp(command:GymApi):HttpResponse = {
     val uri = _host + ":" + _port + command.uri
-    val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.source))
-    //println(s"http request: ${uri}, ${command.source}")
+    val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.json))
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     Await.result(responseFuture, _timeout.second)
   }
    def execute(command:listEnvs): GymAllEnvs = {
-    //println("listEnvs")
     val resp = reqResp(command)
     println(s"resp=$resp")
     val envs:GymAllEnvs = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymAllEnvs], _timeout.second)
     }
-    println(s"envs=$envs")
     envs
   }
    def execute(command:createEnv):GymInstance = {
-    println("createEnv")
     val resp = reqResp(command)
-    println(s"resp=$resp")
     val instance:GymInstance = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInstance], _timeout.second)
     }
-    println(s"envs=$instance")
     instance
   }
    def execute(command:resetEnv):Observation = {
-   // println("resetEnv")
     val resp = reqResp(command)
-  //  println(s"resp=$resp")
     val Observation:Observation = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[Observation], _timeout.second)
     }
-  //  println(s"gymObservation=${Observation.observation}")
     Observation
   }
    def execute(command:actionSpace):ActionSpace = {
-    println("action_space")
     val resp = reqResp(command)
-    println(s"resp=$resp")
     val actionSpace:ActionSpace = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ActionSpace], _timeout.second)
     }
-    println(s"actionSpace=${actionSpace}")
     actionSpace
   }
 
   implicit def execute(command:obsSpace):ObservationSpace = {
-    println("observation_space")
     val resp = reqResp(command)
-    println(s"resp=$resp")
     val observationSpace:ObservationSpace = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ObservationSpace], _timeout.second)
     }
-    println(s"observationSpace=${observationSpace}")
     observationSpace
   }
-  implicit def execute(command:monitorStart):Unit = {
-    println("monitor start")
-    val resp = reqResp(command)
-    println(s"resp=$resp")
-  }
-  implicit def execute(command:monitorClose):Unit = {
-    println("monitor close")
-    val resp = reqResp(command)
-    println(s"resp=$resp")
-  }
-  implicit def execute(command:shutdown):Unit = {
-    println("shutdown")
-    val resp = reqResp(command)
-    println(s"resp=$resp")
-  }
+  implicit def execute(command:monitorStart) = reqResp(command)
+
+  implicit def execute(command:monitorClose) = reqResp(command)
+  implicit def execute(command:shutdown) = reqResp(command)
+
   implicit def execute(command:step):StepReply = {
-    //println("step")
     val resp = reqResp(command)
-    //println(s"resp=$resp")
     val stepReply:StepReply = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[StepReply], _timeout.second)
     }
-    //println(s"gymInfo=${stepReply}")
     stepReply
   }
 }
