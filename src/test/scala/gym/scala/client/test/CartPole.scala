@@ -27,6 +27,8 @@ import breeze.linalg._
 import gym.scala.client.GymSpace.Observation
 import gym.scala.client._
 import java.io.{FileInputStream, FileOutputStream, ObjectInputStream, ObjectOutputStream}
+import breeze.plot._
+
 
 object CartPole extends App {
 
@@ -43,8 +45,8 @@ object CartPole extends App {
 
   implicit val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
-  //train
-  run
+  train
+  //run
 
   def run = {
     val thePolicy = cartPolePolicy(buckets._1 * buckets._2 * buckets._3 * buckets._4, gymActionSpace.info.n)
@@ -73,7 +75,6 @@ object CartPole extends App {
     thePolicy save "c://work/tmp/cartpole"
     val shutDown = shutdown()
     gymClient.execute(shutDown)
-
     gymClient.terminate
   }
   def train = {
@@ -83,7 +84,7 @@ object CartPole extends App {
   var gymObs = gymClient.execute(reset)
   println(gymObs)
   var origObs = gymObsSpace.discretize(gymObs, buckets)
-
+  var rewards  = List[Double]()
   for (episode <- 1 to 500) {
     var done = false
     thePolicy.setEpisode(episode)
@@ -94,24 +95,9 @@ object CartPole extends App {
       val stepReply = gymClient.execute(step1)
       done = stepReply.done
       val next_obs = gymObsSpace.discretize(Observation(stepReply.observation), buckets)
-      //indice = obs.indice
       thePolicy.update(origObs.indice, next_obs.indice, action, stepReply.reward)
-      //      if (done) {
-      //        println(s"action: ${action}, origObs=${origObs}, obs=${stepReply.observation}, nextObs=${next_obs}")
-      //      }
-      //      println(s"episode=${episode}")
-      //      println(s"t=${t}")
-      //      println(s"action=${action}")
-      //      println(s"state=${next_obs}")
-      //      println(s"reward=${stepReply.reward}")
-      //      println(s"best Q=${max(thePolicy.q(next_obs.indice, ::))}")
-      //      println(s"Explore rate=${thePolicy.explore_rate}")
-      //      println(s"Learning rate=${thePolicy.learning_rate}")
-      //      println
       origObs = next_obs
-      if (done) {
-        println(s"reward of episode ${episode} =${t}")
-      }
+      if (done) rewards = t :: rewards
     }
   }
     thePolicy save "c://work/tmp/cartpole"
@@ -119,9 +105,12 @@ object CartPole extends App {
     gymClient.execute(shutDown)
 
     gymClient.terminate
+    val rewardsVector:DenseVector[Double] = DenseVector(rewards.reverse.toArray)
+    val f0 = Figure()
+    val p0 = f0.subplot(0)
+    p0 += plot(linspace(0, rewards.size, rewards.size), rewardsVector,  name="Value")
 
   }
- // println(thePolicy.q)
 
 
   case class CartPoleObservation(x: Int, xDot: Int, theta: Int, thetaDot: Int) {
@@ -184,6 +173,7 @@ object CartPole extends App {
     val y:Int = x.indice
     println(s"indice = ${y}")
   }
+
 }
 
 

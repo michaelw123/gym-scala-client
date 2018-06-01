@@ -1,6 +1,6 @@
 # gym-scala-client
 
-A scala RESTful client for openai gym that allows Scala to have an access to openai gym through gym-http-api using akka-http, spray-json
+A scala RESTful client for openai gym that allows Scala to have an access to openai gym through gym-http-api using akka-http, spray-json, breeze, breeze-viz
 
 gym http api specification:
 https://github.com/openai/gym-http-api/blob/master/README.md
