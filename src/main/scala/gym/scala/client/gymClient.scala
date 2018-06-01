@@ -67,7 +67,6 @@ object gymClient {
   }
    def execute(command:listEnvs): GymAllEnvs = {
     val resp = reqResp(command)
-    println(s"resp=$resp")
     val envs:GymAllEnvs = resp match {
       case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymAllEnvs], _timeout.second)
     }
@@ -103,7 +102,6 @@ object gymClient {
     observationSpace
   }
   implicit def execute(command:monitorStart) = reqResp(command)
-
   implicit def execute(command:monitorClose) = reqResp(command)
   implicit def execute(command:shutdown) = reqResp(command)
 
