@@ -85,7 +85,7 @@ object CartPole extends App {
   println(gymObs)
   var origObs = gymObsSpace.discretize(gymObs, buckets)
   var rewards  = List[Double]()
-  for (episode <- 1 to 500) {
+  for (episode <- 1 to 1000) {
     var done = false
     thePolicy.setEpisode(episode)
     origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
@@ -149,10 +149,11 @@ object CartPole extends App {
     }
     def reset = q = DenseMatrix.zeros[Double](indices, actions)
     def maxAction(indice:Int) = {
-      if (scala.math.random <= learning_rate || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
+      //if (scala.math.random <= learning_rate || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
+      if (scala.math.random <= learning_rate) gymActionSpace.sample else argmax(q(indice,::))
     }
     def explore_rate = {
-       scala.math.max(0.01, scala.math.min(1, 1.0 - scala.math.log10((episode +1 )/25)))
+       scala.math.max(0.1, scala.math.min(1, 1.0 - scala.math.log10((episode +1 )/25)))
     }
     def learning_rate = {
       scala.math.max(0.1, scala.math.min(0.5, 1.0 - scala.math.log10((episode + 1) / 25)))
