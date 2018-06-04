@@ -120,14 +120,14 @@ object CartPole extends App {
 
   object CartPoleObservation {
     def apply(indice:Int) = {
-      val thetaDot = indice % buckets._4
-      val tmp1 = (indice-thetaDot)/buckets._4
+      val thetadot = indice % buckets._4
+      val tmp1 = (indice-thetadot)/buckets._4
       val theta = tmp1%buckets._3
       val tmp2 = (tmp1-theta)/buckets._3
-      val xDot = tmp2%buckets._2
-      val tmp3 = (tmp2 - xDot)/buckets._2
+      val xdot = tmp2%buckets._2
+      val tmp3 = (tmp2 - xdot)/buckets._2
       val x = tmp3/buckets._1
-      new CartPoleObservation(x, xDot, theta, thetaDot)
+      new CartPoleObservation(x, xdot, theta, thetadot)
     }
   }
   implicit def gymObs2Observation(gymObs:Observation):CartPoleObservation = {
