@@ -24,9 +24,10 @@ package gym.scala.client.test
   * Created by Michael Wang on 05/25/2018.
   */
 import breeze.linalg._
-import gym.scala.client.GymSpace.Observation
+import gym.scala.client.GymSpace.{Observation, ObservationSpace}
 import gym.scala.client._
 import java.io.{FileInputStream, FileOutputStream, ObjectInputStream, ObjectOutputStream}
+
 import breeze.plot._
 
 
@@ -131,7 +132,6 @@ object CartPole extends App {
     }
   }
   implicit def gymObs2Observation(gymObs:Observation):CartPoleObservation = {
-    val x = gymObs.observation(0).toInt
         new CartPoleObservation(gymObs.observation(0).toInt,
           gymObs.observation(1).toInt,
           gymObs.observation(2).toInt,
