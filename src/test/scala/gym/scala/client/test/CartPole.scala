@@ -149,14 +149,14 @@ object CartPole extends App {
     }
     def reset = q = DenseMatrix.zeros[Double](indices, actions)
     def maxAction(indice:Int) = {
-      //if (scala.math.random <= learning_rate || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
-      if (scala.math.random <= learning_rate) gymActionSpace.sample else argmax(q(indice,::))
+      if (scala.math.random <= explore_rate || max(q(indice,::))==0) gymActionSpace.sample else argmax(q(indice,::))
+      //if (scala.math.random <= learning_rate) gymActionSpace.sample else argmax(q(indice,::))
     }
     def explore_rate = {
        scala.math.max(0.1, scala.math.min(1, 1.0 - scala.math.log10((episode +1 )/25)))
     }
     def learning_rate = {
-      scala.math.max(0.1, scala.math.min(0.5, 1.0 - scala.math.log10((episode + 1) / 25)))
+      scala.math.max(0.01, scala.math.min(0.5, 1.0 - scala.math.log10((episode + 1) / 25)))
     }
     def save(file:String) = {
       val oos = new ObjectOutputStream(new FileOutputStream(file))
