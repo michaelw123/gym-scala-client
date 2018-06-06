@@ -31,3 +31,6 @@ A solution of CartPole has been implemented in Scala using Q-learning through gy
 
 Please cite gym-scala-client if it helps your Scala AI project!
 
+
+![CartPole Rewards](gym-scala-client/CartPole.PNG?raw=true "Rewards")
+
