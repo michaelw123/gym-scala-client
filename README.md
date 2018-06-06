@@ -29,11 +29,10 @@ POST /v1/shutdown/
 
 A solution of CartPole has been implemented in Scala using Q-learning through gym-scala-client. Contributions of solution to other gym environments are welcome.
 
-![Q-Learning] Reinforcement.Learning/qlearning.PNG?raw=true "Q-Learning"
-![CartPole Rewards](gym-scala-client/CartPole.png?raw=true "Rewards")
+
+![CartPole Rewards] (gym-scala-client/CartPole.png?raw=true "Rewards")
 
 Please cite gym-scala-client if it helps your Scala AI project!
 
-![CartPole Rewards](gym-scala-client/CartPole.png?raw=true "Rewards")
 
 
