@@ -86,7 +86,7 @@ object CartPole extends App {
   println(gymObs)
   var origObs = gymObsSpace.discretize(gymObs, buckets)
   var rewards  = List[Double]()
-  for (episode <- 1 to 1000) {
+  for (episode <- 1 to 100) {
     var done = false
     thePolicy.setEpisode(episode)
     origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
