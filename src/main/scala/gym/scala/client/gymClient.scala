@@ -61,90 +61,101 @@ object gymClient {
     _timeout = t
     this
   }
-  def execute[A, R](command:A)(implicit ev:Execution[A, R]):R = ev.execute(command)
 
-  def reqResp(command:GymApi):HttpResponse = {
+  def execute[A, R](command: A)(implicit ev: Execution[A, R]): R = ev.execute(command)
+
+  def reqResp(command: GymApi): HttpResponse = {
     val uri = _host + ":" + _port + command.uri
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.json))
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)
     Await.result(responseFuture, _timeout.second)
   }
-}
 
-trait Execution[A, R] {
-  def execute(command: A):R
-}
-object Execution {
-  implicit val system = ActorSystem()
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-  implicit val executionContext: ExecutionContextExecutor = system.dispatcher
-  implicit object ListEnvExecution  extends Execution[listEnvs, GymAllEnvs] {
-    def execute(command:listEnvs):GymAllEnvs = {
-      val resp = gymClient.reqResp(command)
-      val envs:GymAllEnvs = resp match {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymAllEnvs], gymClient._timeout.second)
+
+  trait Execution[A, R] {
+    def execute(command: A): R
+  }
+
+  object Execution {
+
+    implicit object ListEnvExecution extends Execution[listEnvs, GymAllEnvs] {
+      def execute(command: listEnvs): GymAllEnvs = {
+        val resp = gymClient.reqResp(command)
+        val envs: GymAllEnvs = resp match {
+          case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymAllEnvs], gymClient._timeout.second)
+        }
+        envs
       }
-      envs
     }
-  }
-  implicit object CreateEnvExecution  extends Execution[createEnv, GymInstance] {
-    def execute(command:createEnv):GymInstance = {
-      val resp = gymClient.reqResp(command)
-      val envs:GymInstance = resp match {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInstance], gymClient._timeout.second)
+
+    implicit object CreateEnvExecution extends Execution[createEnv, GymInstance] {
+      def execute(command: createEnv): GymInstance = {
+        val resp = gymClient.reqResp(command)
+        val envs: GymInstance = resp match {
+          case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[GymInstance], gymClient._timeout.second)
+        }
+        envs
       }
-      envs
     }
-  }
-  implicit object ResetEnvExecution  extends Execution[resetEnv, Observation] {
-    def execute(command:resetEnv):Observation = {
-      val resp = gymClient.reqResp(command)
-      val envs:Observation = resp match {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[Observation], gymClient._timeout.second)
+
+    implicit object ResetEnvExecution extends Execution[resetEnv, Observation] {
+      def execute(command: resetEnv): Observation = {
+        val resp = gymClient.reqResp(command)
+        val envs: Observation = resp match {
+          case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[Observation], gymClient._timeout.second)
+        }
+        envs
       }
-      envs
     }
-  }
-  implicit object ActionSpaceExecution  extends Execution[actionSpace, ActionSpace] {
-    def execute(command:actionSpace):ActionSpace = {
-      val resp = gymClient.reqResp(command)
-      val envs:ActionSpace = resp match {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ActionSpace], gymClient._timeout.second)
+
+    implicit object ActionSpaceExecution extends Execution[actionSpace, ActionSpace] {
+      def execute(command: actionSpace): ActionSpace = {
+        val resp = gymClient.reqResp(command)
+        val envs: ActionSpace = resp match {
+          case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ActionSpace], gymClient._timeout.second)
+        }
+        envs
       }
-      envs
     }
-  }
-  implicit object ObsSpaceExecution  extends Execution[obsSpace, ObservationSpace] {
-    def execute(command:obsSpace):ObservationSpace = {
-      val resp = gymClient.reqResp(command)
-      val envs:ObservationSpace = resp match {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ObservationSpace], gymClient._timeout.second)
+
+    implicit object ObsSpaceExecution extends Execution[obsSpace, ObservationSpace] {
+      def execute(command: obsSpace): ObservationSpace = {
+        val resp = gymClient.reqResp(command)
+        val envs: ObservationSpace = resp match {
+          case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ObservationSpace], gymClient._timeout.second)
+        }
+        envs
       }
-      envs
     }
-  }
-  implicit object MonitorStartExecution  extends Execution[monitorStart, Unit] {
-    def execute(command:monitorStart):Unit = {
-      gymClient.reqResp(command)
-    }
-  }
-  implicit object MonitorCloseExecution  extends Execution[monitorClose, Unit] {
-    def execute(command:monitorClose):Unit = {
-      gymClient.reqResp(command)
-    }
-  }
-  implicit object ShutdownExecution  extends Execution[shutdown, Unit] {
-    def execute(command:shutdown):Unit = {
-      gymClient.reqResp(command)
-    }
-  }
-  implicit object StepExecution  extends Execution[step, StepReply] {
-    def execute(command:step):StepReply = {
-      val resp = gymClient.reqResp(command)
-      val envs:StepReply = resp match {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[StepReply], gymClient._timeout.second)
+
+    implicit object MonitorStartExecution extends Execution[monitorStart, Unit] {
+      def execute(command: monitorStart): Unit = {
+        gymClient.reqResp(command)
       }
-      envs
     }
+
+    implicit object MonitorCloseExecution extends Execution[monitorClose, Unit] {
+      def execute(command: monitorClose): Unit = {
+        gymClient.reqResp(command)
+      }
+    }
+
+    implicit object ShutdownExecution extends Execution[shutdown, Unit] {
+      def execute(command: shutdown): Unit = {
+        gymClient.reqResp(command)
+      }
+    }
+
+    implicit object StepExecution extends Execution[step, StepReply] {
+      def execute(command: step): StepReply = {
+        val resp = gymClient.reqResp(command)
+        val envs: StepReply = resp match {
+          case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[StepReply], gymClient._timeout.second)
+        }
+        envs
+      }
+    }
+
   }
+
 }
