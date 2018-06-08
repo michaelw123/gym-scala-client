@@ -71,7 +71,10 @@ object gymClient {
     Await.result(responseFuture, _timeout.second)
   }
 
+/*
+A type class that executes gymApi
 
+ */
   trait Execution[A, R] {
     def execute(command: A): R
   }
@@ -124,6 +127,7 @@ object gymClient {
         val envs: ObservationSpace = resp match {
           case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ObservationSpace], gymClient._timeout.second)
         }
+        println(envs)
         envs
       }
     }

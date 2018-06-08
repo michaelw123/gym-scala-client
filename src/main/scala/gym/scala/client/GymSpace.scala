@@ -26,6 +26,8 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 
 /**
   * Created by Michael Wang on 2018-05-13.
+  *
+  * objects unmarshalled from json string from Gym
   */
 object GymSpace {
 
