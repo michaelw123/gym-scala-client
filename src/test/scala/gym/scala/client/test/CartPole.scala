@@ -61,7 +61,7 @@ object CartPole extends App {
       thePolicy.setEpisode(episode)
       origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
       for (t <- 1 to 210 if !done) {
-        val action = thePolicy.maxAction(origObs.indice)
+        val action = thePolicy.chooseAction(origObs.indice)
         val step1 = step(gymInstance, action)
         val stepReply = gymClient.execute(step1)
         done = stepReply.done
@@ -91,7 +91,7 @@ object CartPole extends App {
     thePolicy.setEpisode(episode)
     origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
     for (t <- 1 to 210 if !done) {
-      val action = thePolicy.maxAction(origObs.indice)
+      val action = thePolicy.chooseAction(origObs.indice)
       val step1 = step(gymInstance, action)
       val stepReply = gymClient.execute(step1)
       done = stepReply.done
@@ -148,7 +148,7 @@ object CartPole extends App {
       q(old_indice, action) = q(old_indice,action) + learning_rate * (reward + discount * max(q(new_indice, ::)) - q(old_indice, action))
     }
     def reset = q = DenseMatrix.zeros[Double](indices, actions)
-    def maxAction(indice:Int) = {
+    def chooseAction(indice:Int) = {
       if (scala.math.random <= explore_rate ) gymActionSpace.sample else argmax(q(indice,::))
       //if (scala.math.random <= learning_rate) gymActionSpace.sample else argmax(q(indice,::))
     }
@@ -169,12 +169,6 @@ object CartPole extends App {
       ois.close
     }
   }
-  def printit(x:CartPoleObservation ) = {
-    println(x)
-    val y:Int = x.indice
-    println(s"indice = ${y}")
-  }
-
 }
 
 
