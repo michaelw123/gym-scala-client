@@ -23,8 +23,7 @@ package gym.scala.client
 import akka.http.scaladsl.model.{ContentTypes, HttpMethods}
 import gym.scala.client.GymSpace._
 
-sealed trait GymApi {
-  val contentType = ContentTypes.`application/json`
+trait GymApi {
   val envRoot = "/v1/envs/"
   val method = HttpMethods.POST
   val gymInstance:GymInstance = GymInstance.apply("")
