@@ -39,7 +39,7 @@ case class listEnvs(override val gymInstance:GymInstance = GymInstance.apply("")
 case class resetEnv(override val gymInstance:GymInstance) extends GymApi{
   override val uri=s"${envRoot}${gymInstance.instance_id}/reset/"
 }
-case class step(override val gymInstance:GymInstance, action:Int, render:Boolean) extends GymApi {
+case class step(override val gymInstance:GymInstance, action:Int, render:Boolean=false) extends GymApi {
   override val json = s"""{ "action": ${action}, "render": ${render} }"""
   override val uri=s"${envRoot}${gymInstance.instance_id}/step/"
 }
