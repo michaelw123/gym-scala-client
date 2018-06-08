@@ -116,7 +116,6 @@ object CartPole extends App {
 
 
   case class CartPoleObservation(x: Int, xDot: Int, theta: Int, thetaDot: Int) {
-    //assume buckets and scripts are 1-based
     def indice = ((x*buckets._2 + xDot) * buckets._3 + theta )*buckets._4 + thetaDot
   }
 

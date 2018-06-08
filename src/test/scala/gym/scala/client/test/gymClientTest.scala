@@ -47,8 +47,6 @@ object gymClientTest extends App {
 
   val obsspace = obsSpace(gymInstance)
   val gymObsSpace = gymClient.execute(obsspace)
-  //println(s"high=${gymObsSpace.info.high}")
-  //println(s"low=${gymObsSpace.info.low}")
   var done = false
   for (episode <- 1 to 100) {
     var steps = 0
