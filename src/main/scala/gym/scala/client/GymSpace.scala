@@ -71,13 +71,17 @@ object GymSpace {
       var aSample = List[Double]()
       for (i <- shape(0)-1 to 0) aSample = Uniform(low(i), high(i)).draw :: aSample
       aSample
+//
+//      List(Uniform(low(0), high(0)).draw,
+//        Uniform(low(1), high(1)).draw,
+//        Uniform(low(2), high(2)).draw,
+//        Uniform(low(3), high(3)).draw)
     }
     def contains(x:List[Double]):Boolean = {
       false
     }
   }
   object BoxSpace  extends DefaultJsonProtocol with SprayJsonSupport {
-
     implicit val boxSpaceFormat = jsonFormat4(BoxSpace.apply)
   }
 
@@ -87,23 +91,23 @@ object GymSpace {
   }
 
   case class ObservationSpace (info:BoxSpace){
-    def discretize(obs:Observation, buckets:(Int, Int, Int, Int)): Observation  = {
-      val upperBound = (info.high(0), 0.5, info.high(2), scala.math.toRadians(50.0))
-      val lowerbound = (info.low(0), -0.5, info.low(2), -scala.math.toRadians(50.0))
-      val ratios = ((obs.observation(0) + scala.math.abs(lowerbound._1)) / (upperBound._1 - lowerbound._1),
-          (obs.observation(1) + scala.math.abs(lowerbound._2)) / (upperBound._2 - lowerbound._2),
-          (obs.observation(2) + scala.math.abs(lowerbound._3)) / (upperBound._3 - lowerbound._3),
-          (obs.observation(3) + scala.math.abs(lowerbound._4)) / (upperBound._4 - lowerbound._4))
-      val newObs = (scala.math.round((buckets._1 -1 ) * ratios._1),
-          scala.math.round((buckets._2 -1 ) * ratios._2),
-          scala.math.round((buckets._3 -1 ) * ratios._3),
-          scala.math.round((buckets._4 -1 ) * ratios._4))
-      val theObs:List[Double] = List(scala.math.min(buckets._1 -1, scala.math.max(0, newObs._1)),
-        scala.math.min(buckets._2 -1, scala.math.max(0, newObs._2)),
-        scala.math.min(buckets._3 -1, scala.math.max(0, newObs._3)),
-        scala.math.min(buckets._4 -1, scala.math.max(0, newObs._4)))
-      Observation(theObs)
-    }
+//    def discretize(obs:Observation, buckets:(Int, Int, Int, Int)): Observation  = {
+//      val upperBound = (info.high(0), 0.5, info.high(2), scala.math.toRadians(50.0))
+//      val lowerbound = (info.low(0), -0.5, info.low(2), -scala.math.toRadians(50.0))
+//      val ratios = ((obs.observation(0) + scala.math.abs(lowerbound._1)) / (upperBound._1 - lowerbound._1),
+//          (obs.observation(1) + scala.math.abs(lowerbound._2)) / (upperBound._2 - lowerbound._2),
+//          (obs.observation(2) + scala.math.abs(lowerbound._3)) / (upperBound._3 - lowerbound._3),
+//          (obs.observation(3) + scala.math.abs(lowerbound._4)) / (upperBound._4 - lowerbound._4))
+//      val newObs = (scala.math.round((buckets._1 -1 ) * ratios._1),
+//          scala.math.round((buckets._2 -1 ) * ratios._2),
+//          scala.math.round((buckets._3 -1 ) * ratios._3),
+//          scala.math.round((buckets._4 -1 ) * ratios._4))
+//      val theObs:List[Double] = List(scala.math.min(buckets._1 -1, scala.math.max(0, newObs._1)),
+//        scala.math.min(buckets._2 -1, scala.math.max(0, newObs._2)),
+//        scala.math.min(buckets._3 -1, scala.math.max(0, newObs._3)),
+//        scala.math.min(buckets._4 -1, scala.math.max(0, newObs._4)))
+//      Observation(theObs)
+//    }
   }
   object  ObservationSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val observationSpaceFormat = jsonFormat1(ObservationSpace.apply)
