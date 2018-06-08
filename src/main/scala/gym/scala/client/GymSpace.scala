@@ -68,10 +68,9 @@ object GymSpace {
   case class BoxSpace(high: List[Double], low: List[Double], name: String, shape: List[Int]) extends Space[List[Double]] {
     def sample:List[Double] = {
       import breeze.stats.distributions._
-      List(Uniform(low(0), high(0)).draw,
-        Uniform(low(1), high(1)).draw,
-        Uniform(low(2), high(2)).draw,
-        Uniform(low(3), high(3)).draw)
+      var aSample = List[Double]()
+      for (i <- shape(0)-1 to 0) aSample = Uniform(low(i), high(i)).draw :: aSample
+      aSample
     }
     def contains(x:List[Double]):Boolean = {
       false
