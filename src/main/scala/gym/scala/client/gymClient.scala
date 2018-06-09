@@ -127,7 +127,6 @@ A type class that executes gymApi
         val envs: ObservationSpace = resp match {
           case HttpResponse(StatusCodes.OK, headers, entity, _) => Await.result(Unmarshal(entity).to[ObservationSpace], gymClient._timeout.second)
         }
-        println(envs)
         envs
       }
     }
