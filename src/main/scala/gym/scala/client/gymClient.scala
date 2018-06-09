@@ -62,7 +62,7 @@ object gymClient {
     this
   }
 
-  def execute[A, R](command: A)(implicit ev: Execution[A, R]): R = ev.execute(command)
+  def execute[A, R](command: A)(implicit  t: A <:< GymApi, ev: Execution[A, R]): R = ev.execute(command)
 
   def reqResp(command: GymApi): HttpResponse = {
     val uri = _host + ":" + _port + command.uri
