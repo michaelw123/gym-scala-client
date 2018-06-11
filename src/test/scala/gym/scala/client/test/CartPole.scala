@@ -87,7 +87,7 @@ object CartPole extends App {
     val cartPoleObsSpace:CartPoleObservationSpace = gymObsSpace
     var origObs = cartPoleObsSpace.discretize(gymObs, buckets)
     var rewards  = List[Double]()
-    for (episode <- 1 to 500) {
+    for (episode <- 1 to 1000) {
       var done = false
       thePolicy.setEpisode(episode)
       origObs = cartPoleObsSpace.discretize(gymClient.execute(reset), buckets)
@@ -105,12 +105,24 @@ object CartPole extends App {
     thePolicy save "c://work/tmp/cartpole"
     val shutDown = shutdown()
     gymClient.execute(shutDown)
-
     gymClient.terminate
+
     val rewardsVector:DenseVector[Double] = DenseVector(rewards.reverse.toArray)
     val f0 = Figure()
     val p0 = f0.subplot(0)
     p0 += plot(linspace(0, rewards.size, rewards.size), rewardsVector,  name="Rewards")
+
+    var index = 0;
+    var sum = 0.0;
+    val rewardAverage = rewards.reverse.map( a => {
+      sum = sum+a
+      index = index+1
+      sum/index
+    })
+    val rewardAverageVector = DenseVector(rewardAverage.toArray)
+    val f1 = Figure()
+    val p1 = f1.subplot(0)
+    p1 += plot(linspace(0, rewards.size, rewards.size), rewardAverageVector,  name="Average Rewards")
 
   }
 
