@@ -64,7 +64,7 @@ object gymClient {
 
   def execute[A, R](command: A)(implicit  t: A <:< GymApi, ev: Execution[A, R]): R = ev.execute(command)
 
-  def reqResp(command: GymApi): HttpResponse = {
+  private[gymClient] def reqResp(command: GymApi): HttpResponse = {
     val uri = _host + ":" + _port + command.uri
     val httpRequest = HttpRequest(uri = uri).withMethod(command.method).withEntity(HttpEntity(contentType, command.json))
     val responseFuture: Future[HttpResponse] = Http().singleRequest(httpRequest)

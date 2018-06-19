@@ -93,7 +93,7 @@ object CartPole extends App {
       origObs = cartPoleObsSpace.discretize(gymClient.execute(reset), buckets)
       for (t <- 1 to 210 if !done) {
         val action = thePolicy.chooseAction(origObs.indice)
-        val step1 = step(gymInstance, action, false)
+        val step1 = step(gymInstance, action, true)
         val stepReply = gymClient.execute(step1)
         done = stepReply.done
         val next_obs = cartPoleObsSpace.discretize(Observation(stepReply.observation), buckets)
