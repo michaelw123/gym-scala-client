@@ -40,10 +40,10 @@ object gymClient {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-  var _host: String = "http://127.0.0.1"
-  var _port: Int = 5000
-  var _timeout = 10
-  val contentType = ContentTypes.`application/json`
+  private[gymClient] var _host: String = "http://127.0.0.1"
+  private[gymClient] var _port: Int = 5000
+  private[gymClient] var _timeout = 10
+  private[gymClient] val contentType = ContentTypes.`application/json`
 
   def terminate = system.terminate
 

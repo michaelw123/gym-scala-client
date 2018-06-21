@@ -24,43 +24,43 @@ import akka.http.scaladsl.model.{ContentTypes, HttpMethods}
 import gym.scala.client.GymSpace._
 
 trait GymApi {
-  val envRoot = "/v1/envs/"
-  val method = HttpMethods.POST
-  val gymInstance:GymInstance = GymInstance.apply("")
+  protected val envRoot = "/v1/envs/"
+  protected val gymInstance:GymInstance = GymInstance.apply("")
   val json:String = """{}"""
   val uri=envRoot
+  val method = HttpMethods.POST
 }
-case class createEnv( val envId:String) extends GymApi {
+final case class createEnv( val envId:String) extends GymApi {
   override val json = s"""{ "env_id": "${envId}" }"""
 }
-case class listEnvs(override val gymInstance:GymInstance = GymInstance.apply("")) extends GymApi{
+final case class listEnvs(override val gymInstance:GymInstance = GymInstance.apply("")) extends GymApi{
   override val method = HttpMethods.GET
 }
-case class resetEnv(override val gymInstance:GymInstance) extends GymApi{
+final case class resetEnv(override val gymInstance:GymInstance) extends GymApi{
   override val uri=s"${envRoot}${gymInstance.instance_id}/reset/"
 }
-case class step(override val gymInstance:GymInstance, action:Int, render:Boolean=false) extends GymApi {
+final case class step(override val gymInstance:GymInstance, action:Int, render:Boolean=false) extends GymApi {
   override val json = s"""{ "action": ${action}, "render": ${render} }"""
   override val uri=s"${envRoot}${gymInstance.instance_id}/step/"
 }
 
-case class actionSpace(override val gymInstance:GymInstance) extends GymApi{
+final case class actionSpace(override val gymInstance:GymInstance) extends GymApi{
   override val method = HttpMethods.GET
   override val uri=s"${envRoot}${gymInstance.instance_id}/action_space/"
 }
-case class obsSpace(override val gymInstance:GymInstance) extends GymApi{
+final case class obsSpace(override val gymInstance:GymInstance) extends GymApi{
   override val method = HttpMethods.GET
   override val uri=s"${envRoot}${gymInstance.instance_id}/observation_space/"
 }
-case class monitorStart(override val gymInstance:GymInstance) extends GymApi{
+final case class monitorStart(override val gymInstance:GymInstance) extends GymApi{
   override val json = s"""{ "resume": false, "directory": "/openai/tmp", "force": true }"""
   override val uri=s"${envRoot}${gymInstance.instance_id}/monitor/start/"
 }
-case class monitorClose(override val gymInstance:GymInstance) extends GymApi{
+final case class monitorClose(override val gymInstance:GymInstance) extends GymApi{
   override val uri=s"${envRoot}${gymInstance.instance_id}/monitor/close/"
 }
 //case class monitorUpload(instanceId:Option[String]) extends GymApi
-case class shutdown() extends GymApi {
+final case class shutdown() extends GymApi {
   override val uri="/v1/shutdown/"
 }
 
