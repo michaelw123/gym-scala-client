@@ -29,13 +29,13 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
   */
 object GymSpace {
 
-  case class GymInstance(instance_id: String)
+  case class GymInstance private (instance_id: String)
 
   object GymInstance extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val gymInstanceFormat = jsonFormat1(GymInstance.apply)
   }
 
-  case class GymAllEnvs(all_envs: Map[String, String])
+  case class GymAllEnvs private(all_envs: Map[String, String])
 
   object GymAllEnvs extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val gymAllEnvsFormat = jsonFormat1(GymAllEnvs.apply)
@@ -45,7 +45,7 @@ object GymSpace {
     def sample:A
     def contains(x:A):Boolean
   }
-  case class DiscreteSpace(name: String, n: Int) extends Space[Int]{
+  case class DiscreteSpace private (name: String, n: Int) extends Space[Int]{
     def sample:Int = {
       val r = scala.util.Random
       r.nextInt(n)
@@ -56,14 +56,14 @@ object GymSpace {
   object DiscreteSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val discreteSpaceFormat = jsonFormat2(DiscreteSpace.apply)
   }
-  case class ActionSpace(info: DiscreteSpace) {
+  case class ActionSpace private (info: DiscreteSpace) {
     def sample:Int = info.sample
   }
 
   object ActionSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val actionSpaceFormat = jsonFormat1(ActionSpace.apply)
   }
-  case class BoxSpace(high: List[Double], low: List[Double], name: String, shape: List[Int]) extends Space[List[Double]] {
+  case class BoxSpace private (high: List[Double], low: List[Double], name: String, shape: List[Int]) extends Space[List[Double]] {
     def sample:List[Double] = {
       import breeze.stats.distributions._
       List(Uniform(low(0), high(0)).draw,
@@ -80,16 +80,16 @@ object GymSpace {
     implicit val boxSpaceFormat = jsonFormat4(BoxSpace.apply)
   }
 
-  case class Observation(observation: List[Double])
+  case class Observation private (observation: List[Double])
   object Observation extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val observationFormat = jsonFormat1(Observation.apply)
   }
 
-  case class ObservationSpace (info:BoxSpace)
+  case class ObservationSpace private (info:BoxSpace)
   object  ObservationSpace extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val observationSpaceFormat = jsonFormat1(ObservationSpace.apply)
   }
-  case class StepReply(observation: List[Double], reward: Int, done: Boolean, info: Map[String, String])
+  case class StepReply private (observation: List[Double], reward: Int, done: Boolean, info: Map[String, String])
 
   object StepReply extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val gymStepFormat = jsonFormat4(StepReply.apply)
