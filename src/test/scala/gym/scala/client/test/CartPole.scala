@@ -37,7 +37,7 @@ object CartPole extends App {
   val buckets = (1, 1, 6, 3)
   gymClient.host("http://127.0.0.1")
     .port(5000)
-    .timeout(20)
+    .timeout(30)
   val createEnv = new createEnv("CartPole-v0")
   val gymInstance = gymClient.execute(createEnv)
 
