@@ -62,7 +62,7 @@ object CartPole extends App {
       origObs = gymObsSpace.discretize(gymClient.execute(reset), buckets)
       for (t <- 1 to 210 if !done) {
         val action = thePolicy.chooseAction(origObs.indice)
-        val step1 = step(gymInstance, action, true)
+        val step1 = step(gymInstance, action, false)
         val stepReply = gymClient.execute(step1)
         done = stepReply.done
         val next_obs = gymObsSpace.discretize(Observation(stepReply.observation), buckets)
@@ -72,6 +72,7 @@ object CartPole extends App {
           println(s"reward of episode ${episode} =${t}")
         }
       }
+      println(s"episode ${episode}")
     }
     thePolicy save "c://work/tmp/cartpole"
     val shutDown = shutdown()
@@ -93,7 +94,7 @@ object CartPole extends App {
       origObs = cartPoleObsSpace.discretize(gymClient.execute(reset), buckets)
       for (t <- 1 to 210 if !done) {
         val action = thePolicy.chooseAction(origObs.indice)
-        val step1 = step(gymInstance, action, true)
+        val step1 = step(gymInstance, action, false)
         val stepReply = gymClient.execute(step1)
         done = stepReply.done
         val next_obs = cartPoleObsSpace.discretize(Observation(stepReply.observation), buckets)
@@ -101,6 +102,7 @@ object CartPole extends App {
         origObs = next_obs
         if (done) rewards = t :: rewards
       }
+      println(s"episode ${episode}, rewards size: ${rewards.size}")
     }
     thePolicy save "c://work/tmp/cartpole"
     val shutDown = shutdown()
@@ -112,17 +114,30 @@ object CartPole extends App {
     val p0 = f0.subplot(0)
     p0 += plot(linspace(0, rewards.size, rewards.size), rewardsVector,  name="Rewards")
 
-    var index = 0;
-    var sum = 0.0;
-    val rewardAverage = rewards.reverse.map( a => {
-      sum = sum+a
-      index = index+1
-      sum/index
-    })
+
+//    var index = 0;
+// //   var sum = 0.0;
+//    val rewardAverage = rewards.map( _ => {
+//      val tmp = rewards.drop(rewards.size - 800 + index).dropRight(index)
+//      index = index +1
+//      tmp.sum / tmp.size
+//    })
+    val rewardAverage = rewards.reverse.sliding(200).toList.map(a => a.sum/a.size)
+    println(s"rewardAverage size: ${rewardAverage.size}")
+//    val rewardAverage = rewards.reverse.map( a => {
+//      sum = sum+a
+//      index = index+1
+//      var total = index
+//      if (index > 200) {
+//        sum = sum - rewards(rewards.size - index + 200)
+//        total = 200
+//      }
+//      sum/total
+//    })
     val rewardAverageVector = DenseVector(rewardAverage.toArray)
     val f1 = Figure()
     val p1 = f1.subplot(0)
-    p1 += plot(linspace(0, rewards.size, rewards.size), rewardAverageVector,  name="Average Rewards")
+    p1 += plot(linspace(0, rewardAverage.size, rewardAverage.size), rewardAverageVector,  name="Average Rewards")
 
   }
 
