@@ -114,26 +114,9 @@ object CartPole extends App {
     val p0 = f0.subplot(0)
     p0 += plot(linspace(0, rewards.size, rewards.size), rewardsVector,  name="Rewards")
 
-
-//    var index = 0;
-// //   var sum = 0.0;
-//    val rewardAverage = rewards.map( _ => {
-//      val tmp = rewards.drop(rewards.size - 800 + index).dropRight(index)
-//      index = index +1
-//      tmp.sum / tmp.size
-//    })
     val rewardAverage = rewards.reverse.sliding(200).toList.map(a => a.sum/a.size)
     println(s"rewardAverage size: ${rewardAverage.size}")
-//    val rewardAverage = rewards.reverse.map( a => {
-//      sum = sum+a
-//      index = index+1
-//      var total = index
-//      if (index > 200) {
-//        sum = sum - rewards(rewards.size - index + 200)
-//        total = 200
-//      }
-//      sum/total
-//    })
+
     val rewardAverageVector = DenseVector(rewardAverage.toArray)
     val f1 = Figure()
     val p1 = f1.subplot(0)
